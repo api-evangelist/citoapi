@@ -1,0 +1,32 @@
+aid: citoapi
+name: Cito CS2 API
+description: 'Cito CS2 API is a company surfaced via the API Evangelist harvest backlog (source: new-submission)
+  and added to the network as a stub for full-pipeline profiling.'
+url: https://raw.githubusercontent.com/api-evangelist/citoapi/refs/heads/main/apis.yml
+x-type: company
+x-source: harvest:new-submission
+x-tier: stub
+x-tier-reason: harvest
+specificationVersion: '0.20'
+created: '2026-10-08'
+modified: '2026-10-08'
+tags:
+- Company
+apis: []
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
+- FN: APIs.json
+  email: info@apis.io
+common:
+- type: Website
+  url: https://citoapi.com/cs2-api/
+- type: Documentation
+  url: https://citoapi.com/docs/api/cs2
+x-submission-notes: Slug is the company (citoapi), not the 'cito-cs2-api' product; covers CS2, LoL, Dota
+  2, CoD, Apex, UFC. Data provenance undisclosed (skin prices across 25+ marketplaces, UFC bookmaker odds
+  aggregation) -- worth a glance but no stated scraping. MCP is npm-only (cito-mcp).
+x-submission-probe: root/docs 200; /openapi.json 200 (OpenAPI 3.1, 26 paths, titled 'Cito UFC API', server
+  api.citoapi.com/api/v1); llms.txt 200; soft-404 clean (404); api.citoapi.com/api/v1/cs2/matches 401
+  MISSING_API_KEY JSON; invented API path 404 JSON
+x-submitted-by: support@citoapi.com (apis.io/add, 2026-10-06T22:34:11.862Z)
