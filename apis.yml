@@ -1,7 +1,6 @@
 aid: citoapi
 name: Cito CS2 API
-description: 'Cito CS2 API is a company surfaced via the API Evangelist harvest backlog (source: new-submission)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'Cito CS2 API provides live data for Counter-Strike 2, League of Legends, Dota 2, Call of Duty, Apex Legends, and UFC. It aggregates match scores, player statistics, team rosters, rankings, and skin/item prices across dozens of marketplaces, delivering clean JSON via a single API key. The service includes an MCP server for agent integration and SDKs for JavaScript and Python, targeting developers building esports analytics, betting, or game‑related applications.'
 url: https://raw.githubusercontent.com/api-evangelist/citoapi/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:new-submission
@@ -19,10 +18,34 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: DomainSecurity
+  url: security/citoapi-domain-security.yml
 - type: Website
-  url: https://citoapi.com/cs2-api/
+  url: https://citoapi.com/
 - type: Documentation
   url: https://citoapi.com/docs/api/cs2
+- type: DeveloperPortal
+  url: https://citoapi.com/
+- type: APIReference
+  url: https://citoapi.com/docs/api/cs2
+- type: GettingStarted
+  url: https://citoapi.com/signup/
+- type: Support
+  url: https://citoapi.com/contact/
+- type: Blog
+  url: https://citoapi.com/blog/
+- type: GitHubOrganization
+  url: https://github.com/achillesscriptsvip
+- type: Pricing
+  url: https://citoapi.com/pricing/
+- type: SignUp
+  url: https://citoapi.com/signup/
+- type: TermsOfService
+  url: https://citoapi.com/terms/
+- type: PrivacyPolicy
+  url: https://citoapi.com/privacy/
+- type: Postman
+  url: https://www.postman.com/collections/xxxxx
 x-submission-notes: Slug is the company (citoapi), not the 'cito-cs2-api' product; covers CS2, LoL, Dota
   2, CoD, Apex, UFC. Data provenance undisclosed (skin prices across 25+ marketplaces, UFC bookmaker odds
   aggregation) -- worth a glance but no stated scraping. MCP is npm-only (cito-mcp).
