@@ -1,0 +1,40 @@
+name: Cito API Plans
+generated: '2026-10-08'
+method: searched
+source: https://citoapi.com/docs/
+audience: developer-api
+pricing_basis: per-call
+published: true
+plans:
+  - name: Free Plan
+    description: "Free Plan - 500 API calls/month"
+    price_text: "0 USD"
+    price: 0
+    currency: USD
+    limits:
+      - name: monthly_calls
+        max: 500
+  - name: Starter Plan
+    description: "Starter Plan - 1 game, 10,000 API calls/month, live data on a 60-second delay"
+    price_text: "15.00 USD"
+    price: 15.00
+    currency: USD
+    limits:
+      - name: monthly_calls
+        max: 10000
+  - name: Pro Plan
+    description: "Pro Plan - all games, 250,000 API calls/month, real-time live data and odds"
+    price_text: "59.00 USD"
+    price: 59.00
+    currency: USD
+    limits:
+      - name: monthly_calls
+        max: 250000
+  - name: Scale Plan
+    description: "Scale Plan - 1,000,000 API calls/month, WebSockets included"
+    price_text: "100.00 USD"
+    price: 100.00
+    currency: USD
+    limits:
+      - name: monthly_calls
+        max: 1000000

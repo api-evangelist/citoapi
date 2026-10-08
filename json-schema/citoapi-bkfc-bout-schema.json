@@ -1,0 +1,314 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/citoapi/main/json-schema/citoapi-bkfc-bout-schema.json",
+  "title": "BkfcBout",
+  "x-generated": "2026-10-08",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_original/citoapi-v1-openapi.json#/components/schemas/BkfcBout",
+  "type": "object",
+  "properties": {
+    "boutId": {
+      "type": "string"
+    },
+    "event": {
+      "type": "object"
+    },
+    "order": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "1 = main event"
+    },
+    "section": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "slot": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "weightClass": {
+      "type": "object"
+    },
+    "titleFight": {
+      "type": "boolean"
+    },
+    "scheduledRounds": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "roundSeconds": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "live",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "fighters": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "properties": {
+          "corner": {
+            "type": "string",
+            "enum": [
+              "red",
+              "blue"
+            ]
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nickname": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "weighInLb": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "result": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "totals": {
+            "$ref": "#/$defs/BkfcStatLine"
+          }
+        }
+      }
+    },
+    "winner": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "result": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "outcome": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "methodText": {
+          "type": "string"
+        },
+        "round": {
+          "type": "integer"
+        },
+        "time": {
+          "type": "string"
+        },
+        "elapsedSeconds": {
+          "type": "integer"
+        }
+      }
+    },
+    "referee": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "statsAvailable": {
+      "type": "boolean"
+    },
+    "rounds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "round": {
+            "type": "integer"
+          },
+          "red": {
+            "$ref": "#/$defs/BkfcStatLine"
+          },
+          "blue": {
+            "$ref": "#/$defs/BkfcStatLine"
+          }
+        }
+      }
+    },
+    "cancellation": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": [
+            "removed_from_card",
+            "moved",
+            "opponent_changed",
+            "event_cancelled",
+            "not_in_official_results"
+          ]
+        },
+        "movedToEvent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "replacedByBoutId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "removedAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "BkfcStatLine": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "landed": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "thrown": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "missed": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "knockdowns": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "headLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "headThrown": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "bodyLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "bodyThrown": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "distanceLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "distanceThrown": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clinchLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clinchThrown": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "distanceHeadLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "distanceBodyLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clinchHeadLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clinchBodyLanded": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "accuracyPct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

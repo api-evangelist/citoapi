@@ -1,0 +1,39 @@
+generated: '2026-10-08'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://citoapi.com/docs/rate-limits/
+sources:
+- https://citoapi.com/docs/rate-limits/
+- https://citoapi.com/blog/rate-limiting-best-practices/
+- https://citoapi.com/docs/rate-limits/
+- https://citoapi.com/pt-br/docs/rate-limits/
+name: Cito CS2 API rate limits
+limits:
+- name: Free plan per minute
+  limit_text: 10 requests/minute
+  max: 10
+  window: minute
+  plan: Free
+- name: Starter plan per minute
+  limit_text: 30 requests/minute
+  max: 30
+  window: minute
+  plan: Starter
+- name: Pro plan per minute
+  limit_text: 100 requests/minute
+  max: 100
+  window: minute
+  plan: Pro
+- name: Scale plan per minute
+  limit_text: 400 requests/minute
+  max: 400
+  window: minute
+  plan: Scale
+headers:
+- X-RateLimit-Limit
+- X-RateLimit-Remaining
+- X-RateLimit-Reset
+- Retry-After
+exhaustion_status: 429
+docs: https://citoapi.com/docs/rate-limits/
+note: 8 extracted row(s) were dropped because their quote was not on the page.

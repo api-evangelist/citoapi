@@ -1,0 +1,42 @@
+generated: '2026-10-08'
+method: probed
+source: https://citoapi.com/privacy
+signals:
+  data_subject_request:
+    evidence:
+      - source: https://citoapi.com/privacy
+        http_status: 200
+        fetched: "true"
+        quote: "You can access and export your data at any time through your dashboard settings."
+        note: Users may retrieve their personal data via dashboard.
+      - source: https://citoapi.com/privacy
+        http_status: 200
+        fetched: "true"
+        quote: "You can request deletion of your account and associated data by contacting us at privacy@citoapi.com. We will process requests within 30 days."
+        note: Allows deletion requests.
+  data_retention:
+    evidence:
+      - source: https://citoapi.com/privacy
+        http_status: 200
+        fetched: "true"
+        quote: "Account Data We retain your account data for as long as your account is active. After account deletion, we retain certain data for up to 90 days for legal and accounting purposes."
+        note: Retains data post-deletion for up to 90 days.
+      - source: https://citoapi.com/privacy
+        http_status: 200
+        fetched: "true"
+        quote: "API Logs API request logs are retained for 30 days for debugging and analytics purposes, after which they are automatically deleted."
+        note: Logs kept 30 days.
+  incident_notification:
+    evidence:
+      - source: https://citoapi.com/privacy
+        http_status: 200
+        fetched: "true"
+        quote: "In the event of a data breach, we will notify affected users within 72 hours and provide details about what data was affected."
+        note: Breach notification within 72 hours.
+  subprocessors:
+    evidence:
+      - source: https://citoapi.com/privacy
+        http_status: 200
+        fetched: "true"
+        quote: "We use trusted third-party services: Firebase (authentication and hosting), Stripe (payments), and standard analytics tools. These services have their own privacy policies."
+        note: Lists subprocessors.

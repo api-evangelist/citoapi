@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/citoapi/main/json-schema/citoapi-raf-bout-schema.json",
+  "title": "RafBout",
+  "x-generated": "2026-10-08",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_original/citoapi-v1-openapi.json#/components/schemas/RafBout",
+  "type": "object",
+  "properties": {
+    "boutId": {
+      "type": "string"
+    },
+    "event": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "order": {
+      "type": "integer",
+      "description": "1 = main event"
+    },
+    "slot": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "weightClass": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limitLb": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "gender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "crossover": {
+          "type": "boolean"
+        }
+      }
+    },
+    "titleFight": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "championship",
+        "interim"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "athletes": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ISO-3"
+          },
+          "age": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "club": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "hometown": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "score": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "takedowns": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "result": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "win",
+              "loss"
+            ]
+          }
+        }
+      }
+    },
+    "winner": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "slug": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "result": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "method": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "decision",
+            "criteria",
+            "tech_fall",
+            "fall",
+            "injury_default",
+            "disqualification",
+            "forfeit"
+          ]
+        },
+        "methodConfirmed": {
+          "type": "boolean",
+          "description": "false when the method is derived from the score (tie = criteria, 10+ margin = tech fall)"
+        },
+        "score": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "winnerScore": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "loserScore": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "margin": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "endPeriod": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "endClock": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "elapsedSeconds": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      }
+    },
+    "periods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "integer"
+          },
+          "scores": {
+            "type": "array",
+            "items": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "periodScoresReliable": {
+      "type": "boolean"
+    },
+    "cancellation": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "Present when status is cancelled (bouts off the card are kept, never deleted; ask with includeCancelled=true).",
+      "properties": {
+        "reason": {
+          "type": "string",
+          "enum": [
+            "removed_from_card",
+            "moved",
+            "opponent_changed",
+            "event_cancelled"
+          ]
+        },
+        "movedToEvent": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Event slug the same two athletes are now booked on."
+        },
+        "replacedByBoutId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Bout on the same card where one of the athletes now competes."
+        },
+        "removedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

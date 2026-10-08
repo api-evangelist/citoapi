@@ -1,0 +1,1122 @@
+{
+  "@context": {
+    "@vocab": "https://citoapi.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "citoapi": "https://citoapi.com/schema#",
+    "Error": "citoapi:Error",
+    "success": {
+      "@id": "citoapi:success",
+      "@type": "xsd:boolean"
+    },
+    "error": {
+      "@id": "citoapi:error",
+      "@type": "xsd:string"
+    },
+    "QrGenerateBody": "citoapi:QrGenerateBody",
+    "data": {
+      "@id": "citoapi:data",
+      "@type": "xsd:string"
+    },
+    "size": {
+      "@id": "citoapi:size",
+      "@type": "xsd:integer"
+    },
+    "format": {
+      "@id": "citoapi:format",
+      "@type": "xsd:string"
+    },
+    "foreground": {
+      "@id": "citoapi:foreground",
+      "@type": "xsd:string"
+    },
+    "background": {
+      "@id": "citoapi:background",
+      "@type": "xsd:string"
+    },
+    "margin": {
+      "@id": "citoapi:margin",
+      "@type": "xsd:integer"
+    },
+    "errorCorrection": {
+      "@id": "citoapi:errorCorrection",
+      "@type": "xsd:string"
+    },
+    "logo": {
+      "@id": "citoapi:logo"
+    },
+    "TennisAllTimeTitleLeader": "citoapi:TennisAllTimeTitleLeader",
+    "player_id": {
+      "@id": "citoapi:player_id",
+      "@type": "xsd:string"
+    },
+    "player_name": {
+      "@id": "citoapi:player_name",
+      "@type": "xsd:string"
+    },
+    "titles": {
+      "@id": "citoapi:titles",
+      "@type": "xsd:integer"
+    },
+    "TennisCalendarTournamentItem": "citoapi:TennisCalendarTournamentItem",
+    "id": {
+      "@id": "citoapi:id",
+      "@type": "xsd:string"
+    },
+    "name": {
+      "@id": "citoapi:name",
+      "@type": "xsd:string"
+    },
+    "year": {
+      "@id": "citoapi:year"
+    },
+    "tour": {
+      "@id": "citoapi:tour",
+      "@type": "xsd:string"
+    },
+    "level": {
+      "@id": "citoapi:level",
+      "@type": "xsd:string"
+    },
+    "category": {
+      "@id": "citoapi:category"
+    },
+    "tier": {
+      "@id": "citoapi:tier"
+    },
+    "surface": {
+      "@id": "citoapi:surface",
+      "@type": "xsd:string"
+    },
+    "start_date": {
+      "@id": "citoapi:start_date",
+      "@type": "xsd:string"
+    },
+    "end_date": {
+      "@id": "citoapi:end_date"
+    },
+    "draw_size": {
+      "@id": "citoapi:draw_size"
+    },
+    "city": {
+      "@id": "citoapi:city"
+    },
+    "country_code": {
+      "@id": "citoapi:country_code"
+    },
+    "is_live_shell": {
+      "@id": "citoapi:is_live_shell",
+      "@type": "xsd:boolean"
+    },
+    "TennisCareerSummary": "citoapi:TennisCareerSummary",
+    "matches_played": {
+      "@id": "citoapi:matches_played",
+      "@type": "xsd:integer"
+    },
+    "matches_won": {
+      "@id": "citoapi:matches_won",
+      "@type": "xsd:integer"
+    },
+    "matches_lost": {
+      "@id": "citoapi:matches_lost",
+      "@type": "xsd:integer"
+    },
+    "win_percentage": {
+      "@id": "citoapi:win_percentage",
+      "@type": "xsd:decimal"
+    },
+    "titles_count": {
+      "@id": "citoapi:titles_count",
+      "@type": "xsd:integer"
+    },
+    "grand_slam_titles": {
+      "@id": "citoapi:grand_slam_titles",
+      "@type": "xsd:integer"
+    },
+    "masters_titles": {
+      "@id": "citoapi:masters_titles"
+    },
+    "finals_reached": {
+      "@id": "citoapi:finals_reached"
+    },
+    "prize_money_usd": {
+      "@id": "citoapi:prize_money_usd"
+    },
+    "TennisClutchStats": "citoapi:TennisClutchStats",
+    "tiebreaks_played": {
+      "@id": "citoapi:tiebreaks_played",
+      "@type": "xsd:integer"
+    },
+    "tiebreaks_won": {
+      "@id": "citoapi:tiebreaks_won",
+      "@type": "xsd:integer"
+    },
+    "tiebreak_win_pct": {
+      "@id": "citoapi:tiebreak_win_pct",
+      "@type": "xsd:decimal"
+    },
+    "deciding_set_matches": {
+      "@id": "citoapi:deciding_set_matches",
+      "@type": "xsd:integer"
+    },
+    "deciding_set_wins": {
+      "@id": "citoapi:deciding_set_wins",
+      "@type": "xsd:integer"
+    },
+    "deciding_set_win_pct": {
+      "@id": "citoapi:deciding_set_win_pct",
+      "@type": "xsd:decimal"
+    },
+    "after_winning_first_set_win_pct": {
+      "@id": "citoapi:after_winning_first_set_win_pct"
+    },
+    "after_losing_first_set_win_pct": {
+      "@id": "citoapi:after_losing_first_set_win_pct"
+    },
+    "vs_top_10_matches": {
+      "@id": "citoapi:vs_top_10_matches"
+    },
+    "vs_top_10_wins": {
+      "@id": "citoapi:vs_top_10_wins"
+    },
+    "vs_top_10_win_pct": {
+      "@id": "citoapi:vs_top_10_win_pct"
+    },
+    "TennisDrawMatch": "citoapi:TennisDrawMatch",
+    "match_id": {
+      "@id": "citoapi:match_id",
+      "@type": "xsd:string"
+    },
+    "match_num": {
+      "@id": "citoapi:match_num",
+      "@type": "xsd:integer"
+    },
+    "player1": {
+      "@id": "citoapi:player1",
+      "@type": "@id"
+    },
+    "player2": {
+      "@id": "citoapi:player2",
+      "@type": "@id"
+    },
+    "score": {
+      "@id": "citoapi:score",
+      "@type": "xsd:string"
+    },
+    "next_match_id": {
+      "@id": "citoapi:next_match_id"
+    },
+    "TennisDrawPlayer": "citoapi:TennisDrawPlayer",
+    "ioc": {
+      "@id": "citoapi:ioc"
+    },
+    "seed": {
+      "@id": "citoapi:seed"
+    },
+    "entry": {
+      "@id": "citoapi:entry"
+    },
+    "is_winner": {
+      "@id": "citoapi:is_winner"
+    },
+    "TennisDrawRound": "citoapi:TennisDrawRound",
+    "round_code": {
+      "@id": "citoapi:round_code",
+      "@type": "xsd:string"
+    },
+    "round_name": {
+      "@id": "citoapi:round_name",
+      "@type": "xsd:string"
+    },
+    "matches": {
+      "@id": "citoapi:matches",
+      "@container": "@list"
+    },
+    "TennisGrandSlamBreakdown": "citoapi:TennisGrandSlamBreakdown",
+    "australian_open": {
+      "@id": "citoapi:australian_open",
+      "@type": "@id"
+    },
+    "roland_garros": {
+      "@id": "citoapi:roland_garros",
+      "@type": "@id"
+    },
+    "wimbledon": {
+      "@id": "citoapi:wimbledon",
+      "@type": "@id"
+    },
+    "us_open": {
+      "@id": "citoapi:us_open",
+      "@type": "@id"
+    },
+    "TennisGrandSlamTournamentRecord": "citoapi:TennisGrandSlamTournamentRecord",
+    "finals": {
+      "@id": "citoapi:finals",
+      "@type": "xsd:integer"
+    },
+    "win_loss": {
+      "@id": "citoapi:win_loss",
+      "@type": "xsd:string"
+    },
+    "win_pct": {
+      "@id": "citoapi:win_pct",
+      "@type": "xsd:decimal"
+    },
+    "TennisH2HDecidingSetsRecord": "citoapi:TennisH2HDecidingSetsRecord",
+    "player1_deciding_set_wins": {
+      "@id": "citoapi:player1_deciding_set_wins",
+      "@type": "xsd:integer"
+    },
+    "player2_deciding_set_wins": {
+      "@id": "citoapi:player2_deciding_set_wins",
+      "@type": "xsd:integer"
+    },
+    "total_deciding_sets": {
+      "@id": "citoapi:total_deciding_sets",
+      "@type": "xsd:integer"
+    },
+    "TennisH2HFormatBreakdown": "citoapi:TennisH2HFormatBreakdown",
+    "best_of_3": {
+      "@id": "citoapi:best_of_3",
+      "@type": "@id"
+    },
+    "best_of_5": {
+      "@id": "citoapi:best_of_5",
+      "@type": "@id"
+    },
+    "TennisH2HLevelBreakdown": "citoapi:TennisH2HLevelBreakdown",
+    "grand_slam": {
+      "@id": "citoapi:grand_slam",
+      "@type": "@id"
+    },
+    "masters_1000": {
+      "@id": "citoapi:masters_1000",
+      "@type": "@id"
+    },
+    "tour_finals": {
+      "@id": "citoapi:tour_finals",
+      "@type": "@id"
+    },
+    "atp_500_250": {
+      "@id": "citoapi:atp_500_250",
+      "@type": "@id"
+    },
+    "olympics_davis_cup": {
+      "@id": "citoapi:olympics_davis_cup",
+      "@type": "@id"
+    },
+    "TennisH2HLevelItem": "citoapi:TennisH2HLevelItem",
+    "player1_wins": {
+      "@id": "citoapi:player1_wins",
+      "@type": "xsd:integer"
+    },
+    "player2_wins": {
+      "@id": "citoapi:player2_wins",
+      "@type": "xsd:integer"
+    },
+    "total": {
+      "@id": "citoapi:total",
+      "@type": "xsd:integer"
+    },
+    "TennisH2HMatchSummary": "citoapi:TennisH2HMatchSummary",
+    "date": {
+      "@id": "citoapi:date",
+      "@type": "xsd:string"
+    },
+    "tournament_name": {
+      "@id": "citoapi:tournament_name"
+    },
+    "round": {
+      "@id": "citoapi:round",
+      "@type": "xsd:string"
+    },
+    "winner_id": {
+      "@id": "citoapi:winner_id",
+      "@type": "xsd:string"
+    },
+    "winner_name": {
+      "@id": "citoapi:winner_name"
+    },
+    "TennisH2HPlayerSummary": "citoapi:TennisH2HPlayerSummary",
+    "current_rank": {
+      "@id": "citoapi:current_rank"
+    },
+    "career_high_rank": {
+      "@id": "citoapi:career_high_rank"
+    },
+    "wins": {
+      "@id": "citoapi:wins",
+      "@type": "xsd:integer"
+    },
+    "TennisH2HSummary": "citoapi:TennisH2HSummary",
+    "total_matches": {
+      "@id": "citoapi:total_matches",
+      "@type": "xsd:integer"
+    },
+    "player1_lead": {
+      "@id": "citoapi:player1_lead"
+    },
+    "finals_matches": {
+      "@id": "citoapi:finals_matches"
+    },
+    "player1_finals_wins": {
+      "@id": "citoapi:player1_finals_wins"
+    },
+    "player2_finals_wins": {
+      "@id": "citoapi:player2_finals_wins"
+    },
+    "grand_slam_matches": {
+      "@id": "citoapi:grand_slam_matches"
+    },
+    "player1_grand_slam_wins": {
+      "@id": "citoapi:player1_grand_slam_wins"
+    },
+    "player2_grand_slam_wins": {
+      "@id": "citoapi:player2_grand_slam_wins"
+    },
+    "TennisH2HSurfaceBreakdown": "citoapi:TennisH2HSurfaceBreakdown",
+    "hard": {
+      "@id": "citoapi:hard",
+      "@type": "@id"
+    },
+    "clay": {
+      "@id": "citoapi:clay",
+      "@type": "@id"
+    },
+    "grass": {
+      "@id": "citoapi:grass",
+      "@type": "@id"
+    },
+    "carpet": {
+      "@id": "citoapi:carpet",
+      "@type": "@id"
+    },
+    "TennisH2HSurfaceItem": "citoapi:TennisH2HSurfaceItem",
+    "TennisH2HTiebreakRecord": "citoapi:TennisH2HTiebreakRecord",
+    "player1_tiebreaks_won": {
+      "@id": "citoapi:player1_tiebreaks_won",
+      "@type": "xsd:integer"
+    },
+    "player2_tiebreaks_won": {
+      "@id": "citoapi:player2_tiebreaks_won",
+      "@type": "xsd:integer"
+    },
+    "total_tiebreaks": {
+      "@id": "citoapi:total_tiebreaks",
+      "@type": "xsd:integer"
+    },
+    "TennisHTTPValidationError": "citoapi:TennisHTTPValidationError",
+    "detail": {
+      "@id": "citoapi:detail",
+      "@container": "@list"
+    },
+    "TennisHeadToHeadMatrixResponse": "citoapi:TennisHeadToHeadMatrixResponse",
+    "players": {
+      "@id": "citoapi:players",
+      "@container": "@list"
+    },
+    "matrix": {
+      "@id": "citoapi:matrix"
+    },
+    "TennisHeadToHeadResponse": "citoapi:TennisHeadToHeadResponse",
+    "summary": {
+      "@id": "citoapi:summary",
+      "@type": "@id"
+    },
+    "surface_breakdown": {
+      "@id": "citoapi:surface_breakdown",
+      "@type": "@id"
+    },
+    "level_breakdown": {
+      "@id": "citoapi:level_breakdown"
+    },
+    "format_breakdown": {
+      "@id": "citoapi:format_breakdown"
+    },
+    "tiebreak_record": {
+      "@id": "citoapi:tiebreak_record"
+    },
+    "deciding_sets": {
+      "@id": "citoapi:deciding_sets"
+    },
+    "TennisListResponse_CalendarTournamentItem_": "citoapi:TennisListResponse_CalendarTournamentItem_",
+    "items": {
+      "@id": "citoapi:items",
+      "@container": "@list"
+    },
+    "page": {
+      "@id": "citoapi:page",
+      "@type": "xsd:integer"
+    },
+    "page_size": {
+      "@id": "citoapi:page_size",
+      "@type": "xsd:integer"
+    },
+    "total_pages": {
+      "@id": "citoapi:total_pages",
+      "@type": "xsd:integer"
+    },
+    "has_next": {
+      "@id": "citoapi:has_next",
+      "@type": "xsd:boolean"
+    },
+    "has_prev": {
+      "@id": "citoapi:has_prev",
+      "@type": "xsd:boolean"
+    },
+    "TennisListResponse_Dict_str__Any__": "citoapi:TennisListResponse_Dict_str__Any__",
+    "TennisListResponse_LiveMatchSummary_": "citoapi:TennisListResponse_LiveMatchSummary_",
+    "TennisListResponse_PlayerListItem_": "citoapi:TennisListResponse_PlayerListItem_",
+    "TennisListResponse_str_": "citoapi:TennisListResponse_str_",
+    "TennisLiveMatchDetail": "citoapi:TennisLiveMatchDetail",
+    "started_at": {
+      "@id": "citoapi:started_at"
+    },
+    "tournament_id": {
+      "@id": "citoapi:tournament_id"
+    },
+    "court": {
+      "@id": "citoapi:court"
+    },
+    "best_of": {
+      "@id": "citoapi:best_of"
+    },
+    "status": {
+      "@id": "citoapi:status",
+      "@type": "xsd:string"
+    },
+    "winner_side": {
+      "@id": "citoapi:winner_side"
+    },
+    "current_set": {
+      "@id": "citoapi:current_set",
+      "@type": "xsd:integer"
+    },
+    "game_score": {
+      "@id": "citoapi:game_score",
+      "@type": "xsd:string"
+    },
+    "server": {
+      "@id": "citoapi:server",
+      "@type": "xsd:integer"
+    },
+    "tiebreak_score": {
+      "@id": "citoapi:tiebreak_score"
+    },
+    "sets": {
+      "@id": "citoapi:sets",
+      "@container": "@list"
+    },
+    "point_history": {
+      "@id": "citoapi:point_history"
+    },
+    "stats": {
+      "@id": "citoapi:stats",
+      "@container": "@list"
+    },
+    "TennisLiveMatchSummary": "citoapi:TennisLiveMatchSummary",
+    "outcome": {
+      "@id": "citoapi:outcome"
+    },
+    "winner": {
+      "@id": "citoapi:winner"
+    },
+    "loser": {
+      "@id": "citoapi:loser"
+    },
+    "source": {
+      "@id": "citoapi:source",
+      "@type": "xsd:string"
+    },
+    "TennisLivePlayerState": "citoapi:TennisLivePlayerState",
+    "sets_won": {
+      "@id": "citoapi:sets_won"
+    },
+    "current_game_score": {
+      "@id": "citoapi:current_game_score"
+    },
+    "is_serving": {
+      "@id": "citoapi:is_serving",
+      "@type": "xsd:boolean"
+    },
+    "TennisLiveSetScore": "citoapi:TennisLiveSetScore",
+    "set_num": {
+      "@id": "citoapi:set_num"
+    },
+    "set_number": {
+      "@id": "citoapi:set_number"
+    },
+    "player1_games": {
+      "@id": "citoapi:player1_games"
+    },
+    "player2_games": {
+      "@id": "citoapi:player2_games"
+    },
+    "tiebreak": {
+      "@id": "citoapi:tiebreak"
+    },
+    "is_completed": {
+      "@id": "citoapi:is_completed"
+    },
+    "TennisMatchDetailResponse": "citoapi:TennisMatchDetailResponse",
+    "tournament": {
+      "@id": "citoapi:tournament"
+    },
+    "match_date": {
+      "@id": "citoapi:match_date",
+      "@type": "xsd:string"
+    },
+    "duration_minutes": {
+      "@id": "citoapi:duration_minutes"
+    },
+    "loser_id": {
+      "@id": "citoapi:loser_id"
+    },
+    "winner_sets_won": {
+      "@id": "citoapi:winner_sets_won"
+    },
+    "loser_sets_won": {
+      "@id": "citoapi:loser_sets_won"
+    },
+    "scheduled_at": {
+      "@id": "citoapi:scheduled_at"
+    },
+    "TennisMatchListItem": "citoapi:TennisMatchListItem",
+    "TennisMatchParticipant": "citoapi:TennisMatchParticipant",
+    "rank": {
+      "@id": "citoapi:rank"
+    },
+    "TennisMatchSetItem": "citoapi:TennisMatchSetItem",
+    "winner_games": {
+      "@id": "citoapi:winner_games"
+    },
+    "loser_games": {
+      "@id": "citoapi:loser_games"
+    },
+    "TennisMatchStatsSummary": "citoapi:TennisMatchStatsSummary",
+    "TennisPaginatedResponse_MatchListItem_": "citoapi:TennisPaginatedResponse_MatchListItem_",
+    "TennisPaginatedResponse_PlayerListItem_": "citoapi:TennisPaginatedResponse_PlayerListItem_",
+    "TennisPaginatedResponse_TournamentListItem_": "citoapi:TennisPaginatedResponse_TournamentListItem_",
+    "TennisPlayerBatchResponse": "citoapi:TennisPlayerBatchResponse",
+    "missing": {
+      "@id": "citoapi:missing",
+      "@container": "@list"
+    },
+    "TennisPlayerListItem": "citoapi:TennisPlayerListItem",
+    "first_name": {
+      "@id": "citoapi:first_name",
+      "@type": "xsd:string"
+    },
+    "last_name": {
+      "@id": "citoapi:last_name",
+      "@type": "xsd:string"
+    },
+    "full_name": {
+      "@id": "citoapi:full_name",
+      "@type": "xsd:string"
+    },
+    "portrait_url": {
+      "@id": "citoapi:portrait_url"
+    },
+    "portrait_attribution": {
+      "@id": "citoapi:portrait_attribution"
+    },
+    "portrait_license": {
+      "@id": "citoapi:portrait_license"
+    },
+    "portrait_source_url": {
+      "@id": "citoapi:portrait_source_url"
+    },
+    "country_name": {
+      "@id": "citoapi:country_name"
+    },
+    "nationality": {
+      "@id": "citoapi:nationality"
+    },
+    "hand": {
+      "@id": "citoapi:hand"
+    },
+    "backhand": {
+      "@id": "citoapi:backhand"
+    },
+    "dob": {
+      "@id": "citoapi:dob"
+    },
+    "height_cm": {
+      "@id": "citoapi:height_cm"
+    },
+    "weight_kg": {
+      "@id": "citoapi:weight_kg"
+    },
+    "turned_pro": {
+      "@id": "citoapi:turned_pro"
+    },
+    "career_high_date": {
+      "@id": "citoapi:career_high_date"
+    },
+    "is_active": {
+      "@id": "citoapi:is_active",
+      "@type": "xsd:boolean"
+    },
+    "TennisPlayerMatchStats": "citoapi:TennisPlayerMatchStats",
+    "aces": {
+      "@id": "citoapi:aces"
+    },
+    "double_faults": {
+      "@id": "citoapi:double_faults"
+    },
+    "serve_points": {
+      "@id": "citoapi:serve_points"
+    },
+    "first_serves_in": {
+      "@id": "citoapi:first_serves_in"
+    },
+    "first_serves_won": {
+      "@id": "citoapi:first_serves_won"
+    },
+    "second_serves_won": {
+      "@id": "citoapi:second_serves_won"
+    },
+    "first_serve_pct": {
+      "@id": "citoapi:first_serve_pct"
+    },
+    "first_serve_win_pct": {
+      "@id": "citoapi:first_serve_win_pct"
+    },
+    "second_serve_win_pct": {
+      "@id": "citoapi:second_serve_win_pct"
+    },
+    "service_games_played": {
+      "@id": "citoapi:service_games_played"
+    },
+    "break_points_saved": {
+      "@id": "citoapi:break_points_saved"
+    },
+    "break_points_faced": {
+      "@id": "citoapi:break_points_faced"
+    },
+    "break_points_converted": {
+      "@id": "citoapi:break_points_converted"
+    },
+    "break_point_opportunities": {
+      "@id": "citoapi:break_point_opportunities"
+    },
+    "total_points_won": {
+      "@id": "citoapi:total_points_won"
+    },
+    "TennisPlayerProfile": "citoapi:TennisPlayerProfile",
+    "age": {
+      "@id": "citoapi:age"
+    },
+    "weeks_at_no_1": {
+      "@id": "citoapi:weeks_at_no_1"
+    },
+    "current_rank_points": {
+      "@id": "citoapi:current_rank_points"
+    },
+    "career_summary": {
+      "@id": "citoapi:career_summary",
+      "@type": "@id"
+    },
+    "TennisPlayerRankingHistoryResponse": "citoapi:TennisPlayerRankingHistoryResponse",
+    "total_weeks_at_no_1": {
+      "@id": "citoapi:total_weeks_at_no_1"
+    },
+    "history": {
+      "@id": "citoapi:history",
+      "@container": "@list"
+    },
+    "TennisPlayerStatsResponse": "citoapi:TennisPlayerStatsResponse",
+    "filters": {
+      "@id": "citoapi:filters"
+    },
+    "serving_stats": {
+      "@id": "citoapi:serving_stats",
+      "@type": "@id"
+    },
+    "return_stats": {
+      "@id": "citoapi:return_stats"
+    },
+    "clutch_and_situational": {
+      "@id": "citoapi:clutch_and_situational"
+    },
+    "grand_slam_breakdown": {
+      "@id": "citoapi:grand_slam_breakdown"
+    },
+    "TennisRankingHistoryPoint": "citoapi:TennisRankingHistoryPoint",
+    "points": {
+      "@id": "citoapi:points",
+      "@type": "xsd:decimal"
+    },
+    "TennisRankingItem": "citoapi:TennisRankingItem",
+    "rank_movement": {
+      "@id": "citoapi:rank_movement"
+    },
+    "previous_rank": {
+      "@id": "citoapi:previous_rank"
+    },
+    "tournaments_played": {
+      "@id": "citoapi:tournaments_played"
+    },
+    "TennisRankingsListResponse": "citoapi:TennisRankingsListResponse",
+    "ranking_date": {
+      "@id": "citoapi:ranking_date",
+      "@type": "xsd:string"
+    },
+    "TennisReturnStats": "citoapi:TennisReturnStats",
+    "first_return_points_won_pct": {
+      "@id": "citoapi:first_return_points_won_pct"
+    },
+    "second_return_points_won_pct": {
+      "@id": "citoapi:second_return_points_won_pct"
+    },
+    "return_games_won_pct": {
+      "@id": "citoapi:return_games_won_pct"
+    },
+    "break_points_converted_pct": {
+      "@id": "citoapi:break_points_converted_pct"
+    },
+    "TennisServingStats": "citoapi:TennisServingStats",
+    "total_aces": {
+      "@id": "citoapi:total_aces"
+    },
+    "total_double_faults": {
+      "@id": "citoapi:total_double_faults"
+    },
+    "aces_per_match": {
+      "@id": "citoapi:aces_per_match"
+    },
+    "first_serve_in_pct": {
+      "@id": "citoapi:first_serve_in_pct"
+    },
+    "first_serve_points_won_pct": {
+      "@id": "citoapi:first_serve_points_won_pct"
+    },
+    "second_serve_points_won_pct": {
+      "@id": "citoapi:second_serve_points_won_pct"
+    },
+    "service_games_won_pct": {
+      "@id": "citoapi:service_games_won_pct"
+    },
+    "break_points_saved_pct": {
+      "@id": "citoapi:break_points_saved_pct"
+    },
+    "TennisSimulationRequest": "citoapi:TennisSimulationRequest",
+    "action": {
+      "@id": "citoapi:action",
+      "@type": "xsd:string"
+    },
+    "player1_id": {
+      "@id": "citoapi:player1_id"
+    },
+    "player2_id": {
+      "@id": "citoapi:player2_id"
+    },
+    "TennisSimulationResponse": "citoapi:TennisSimulationResponse",
+    "new_score": {
+      "@id": "citoapi:new_score"
+    },
+    "event": {
+      "@id": "citoapi:event"
+    },
+    "TennisSurfaceBreakdown": "citoapi:TennisSurfaceBreakdown",
+    "TennisSurfaceStatItem": "citoapi:TennisSurfaceStatItem",
+    "won": {
+      "@id": "citoapi:won",
+      "@type": "xsd:integer"
+    },
+    "lost": {
+      "@id": "citoapi:lost",
+      "@type": "xsd:integer"
+    },
+    "TennisTiebreakDetail": "citoapi:TennisTiebreakDetail",
+    "winner_points": {
+      "@id": "citoapi:winner_points"
+    },
+    "loser_points": {
+      "@id": "citoapi:loser_points"
+    },
+    "TennisTournamentDetailResponse": "citoapi:TennisTournamentDetailResponse",
+    "first_edition_year": {
+      "@id": "citoapi:first_edition_year"
+    },
+    "most_recent_edition_year": {
+      "@id": "citoapi:most_recent_edition_year"
+    },
+    "all_time_title_leader": {
+      "@id": "citoapi:all_time_title_leader"
+    },
+    "TennisTournamentDrawResponse": "citoapi:TennisTournamentDrawResponse",
+    "rounds": {
+      "@id": "citoapi:rounds",
+      "@container": "@list"
+    },
+    "surface_badge": {
+      "@id": "citoapi:surface_badge"
+    },
+    "TennisTournamentListItem": "citoapi:TennisTournamentListItem",
+    "TennisTournamentSummaryInfo": "citoapi:TennisTournamentSummaryInfo",
+    "country": {
+      "@id": "citoapi:country"
+    },
+    "TennisValidationError": "citoapi:TennisValidationError",
+    "loc": {
+      "@id": "citoapi:loc",
+      "@container": "@list"
+    },
+    "msg": {
+      "@id": "citoapi:msg",
+      "@type": "xsd:string"
+    },
+    "type": {
+      "@id": "citoapi:type",
+      "@type": "xsd:string"
+    },
+    "input": {
+      "@id": "citoapi:input"
+    },
+    "ctx": {
+      "@id": "citoapi:ctx"
+    },
+    "RafError": "citoapi:RafError",
+    "RafSearchResult": "citoapi:RafSearchResult",
+    "slug": {
+      "@id": "citoapi:slug",
+      "@type": "xsd:string"
+    },
+    "RafEvent": "citoapi:RafEvent",
+    "headline": {
+      "@id": "citoapi:headline",
+      "@type": "xsd:string"
+    },
+    "number": {
+      "@id": "citoapi:number",
+      "@type": "xsd:integer"
+    },
+    "sequence": {
+      "@id": "citoapi:sequence",
+      "@type": "xsd:integer"
+    },
+    "cancellation": {
+      "@id": "citoapi:cancellation"
+    },
+    "previousDates": {
+      "@id": "citoapi:previousDates",
+      "@container": "@list"
+    },
+    "localTime": {
+      "@id": "citoapi:localTime",
+      "@type": "xsd:string"
+    },
+    "timezone": {
+      "@id": "citoapi:timezone",
+      "@type": "xsd:string"
+    },
+    "startsAt": {
+      "@id": "citoapi:startsAt",
+      "@type": "xsd:dateTime"
+    },
+    "location": {
+      "@id": "citoapi:location"
+    },
+    "attendance": {
+      "@id": "citoapi:attendance",
+      "@type": "xsd:integer"
+    },
+    "bouts": {
+      "@id": "citoapi:bouts"
+    },
+    "card": {
+      "@id": "citoapi:card",
+      "@container": "@list"
+    },
+    "RafBout": "citoapi:RafBout",
+    "boutId": {
+      "@id": "citoapi:boutId",
+      "@type": "xsd:string"
+    },
+    "order": {
+      "@id": "citoapi:order",
+      "@type": "xsd:integer"
+    },
+    "slot": {
+      "@id": "citoapi:slot",
+      "@type": "xsd:string"
+    },
+    "weightClass": {
+      "@id": "citoapi:weightClass"
+    },
+    "titleFight": {
+      "@id": "citoapi:titleFight",
+      "@type": "xsd:string"
+    },
+    "athletes": {
+      "@id": "citoapi:athletes",
+      "@container": "@list"
+    },
+    "result": {
+      "@id": "citoapi:result"
+    },
+    "periods": {
+      "@id": "citoapi:periods",
+      "@container": "@list"
+    },
+    "periodScoresReliable": {
+      "@id": "citoapi:periodScoresReliable",
+      "@type": "xsd:boolean"
+    },
+    "RafAthlete": "citoapi:RafAthlete",
+    "gender": {
+      "@id": "citoapi:gender",
+      "@type": "xsd:string"
+    },
+    "hometown": {
+      "@id": "citoapi:hometown",
+      "@type": "xsd:string"
+    },
+    "club": {
+      "@id": "citoapi:club",
+      "@type": "xsd:string"
+    },
+    "record": {
+      "@id": "citoapi:record"
+    },
+    "RafTitle": "citoapi:RafTitle",
+    "titleKey": {
+      "@id": "citoapi:titleKey",
+      "@type": "xsd:string"
+    },
+    "vacant": {
+      "@id": "citoapi:vacant",
+      "@type": "xsd:boolean"
+    },
+    "champion": {
+      "@id": "citoapi:champion"
+    },
+    "BkfcError": "citoapi:BkfcError",
+    "BkfcStatLine": "citoapi:BkfcStatLine",
+    "landed": {
+      "@id": "citoapi:landed",
+      "@type": "xsd:integer"
+    },
+    "thrown": {
+      "@id": "citoapi:thrown",
+      "@type": "xsd:integer"
+    },
+    "missed": {
+      "@id": "citoapi:missed",
+      "@type": "xsd:integer"
+    },
+    "knockdowns": {
+      "@id": "citoapi:knockdowns",
+      "@type": "xsd:integer"
+    },
+    "headLanded": {
+      "@id": "citoapi:headLanded",
+      "@type": "xsd:integer"
+    },
+    "headThrown": {
+      "@id": "citoapi:headThrown",
+      "@type": "xsd:integer"
+    },
+    "bodyLanded": {
+      "@id": "citoapi:bodyLanded",
+      "@type": "xsd:integer"
+    },
+    "bodyThrown": {
+      "@id": "citoapi:bodyThrown",
+      "@type": "xsd:integer"
+    },
+    "distanceLanded": {
+      "@id": "citoapi:distanceLanded",
+      "@type": "xsd:integer"
+    },
+    "distanceThrown": {
+      "@id": "citoapi:distanceThrown",
+      "@type": "xsd:integer"
+    },
+    "clinchLanded": {
+      "@id": "citoapi:clinchLanded",
+      "@type": "xsd:integer"
+    },
+    "clinchThrown": {
+      "@id": "citoapi:clinchThrown",
+      "@type": "xsd:integer"
+    },
+    "distanceHeadLanded": {
+      "@id": "citoapi:distanceHeadLanded",
+      "@type": "xsd:integer"
+    },
+    "distanceBodyLanded": {
+      "@id": "citoapi:distanceBodyLanded",
+      "@type": "xsd:integer"
+    },
+    "clinchHeadLanded": {
+      "@id": "citoapi:clinchHeadLanded",
+      "@type": "xsd:integer"
+    },
+    "clinchBodyLanded": {
+      "@id": "citoapi:clinchBodyLanded",
+      "@type": "xsd:integer"
+    },
+    "accuracyPct": {
+      "@id": "citoapi:accuracyPct",
+      "@type": "xsd:decimal"
+    },
+    "BkfcEvent": "citoapi:BkfcEvent",
+    "BkfcBout": "citoapi:BkfcBout",
+    "section": {
+      "@id": "citoapi:section",
+      "@type": "xsd:string"
+    },
+    "scheduledRounds": {
+      "@id": "citoapi:scheduledRounds",
+      "@type": "xsd:integer"
+    },
+    "roundSeconds": {
+      "@id": "citoapi:roundSeconds",
+      "@type": "xsd:integer"
+    },
+    "fighters": {
+      "@id": "citoapi:fighters",
+      "@container": "@list"
+    },
+    "referee": {
+      "@id": "citoapi:referee",
+      "@type": "xsd:string"
+    },
+    "statsAvailable": {
+      "@id": "citoapi:statsAvailable",
+      "@type": "xsd:boolean"
+    },
+    "BkfcFighter": "citoapi:BkfcFighter",
+    "nickname": {
+      "@id": "citoapi:nickname",
+      "@type": "xsd:string"
+    },
+    "division": {
+      "@id": "citoapi:division",
+      "@type": "xsd:string"
+    },
+    "birthMonth": {
+      "@id": "citoapi:birthMonth",
+      "@type": "xsd:string"
+    },
+    "heightCm": {
+      "@id": "citoapi:heightCm",
+      "@type": "xsd:decimal"
+    },
+    "reachCm": {
+      "@id": "citoapi:reachCm",
+      "@type": "xsd:decimal"
+    }
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "Cito CS2 API API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects Cito CS2 API's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-08) from openapi/_original/citoapi-v1-openapi.json.",
+  "dcterms:created": "2026-10-08",
+  "dcterms:source": [
+    "openapi/_original/citoapi-v1-openapi.json"
+  ]
+}

@@ -1,0 +1,764 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/citoapi/main/json-schema/citoapi-tennis-match-detail-response-schema.json",
+  "title": "MatchDetailResponse",
+  "description": "Comprehensive match detail response including set scores and stats.\n\nServes both archived (completed) matches and matches still on the live\nboard: the canonical ``id``/``player1``/``player2``/``status``/``sets``\nvocabulary is shared by both, so a customer can write one Match type\nagainst ``/matches/{id}`` whatever state the match is in. ``winner_id``/\n``loser_id``/``winner``/``loser`` are null while a match is still in\nprogress (there is no winner yet); ``player1``/``player2`` are always\npopulated.",
+  "x-generated": "2026-10-08",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisMatchDetailResponse",
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Id",
+      "description": "Unique match identifier"
+    },
+    "tournament_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tournament Id",
+      "description": "Tournament ID"
+    },
+    "tournament": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisTournamentSummaryInfo"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Tournament metadata"
+    },
+    "match_date": {
+      "type": "string",
+      "title": "Match Date",
+      "description": "Match date (YYYY-MM-DD)"
+    },
+    "tour": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tour",
+      "description": "Tour: ATP or WTA",
+      "default": "ATP"
+    },
+    "surface": {
+      "type": "string",
+      "title": "Surface",
+      "description": "Surface"
+    },
+    "round": {
+      "type": "string",
+      "title": "Round",
+      "description": "Round code"
+    },
+    "best_of": {
+      "type": "integer",
+      "title": "Best Of",
+      "description": "Best of 3 or 5 sets",
+      "default": 3
+    },
+    "score": {
+      "type": "string",
+      "title": "Score",
+      "description": "Official score string (or the live scoreline while in progress)"
+    },
+    "outcome": {
+      "type": "string",
+      "title": "Outcome",
+      "description": "Match outcome",
+      "default": "COMPLETED"
+    },
+    "status": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Status",
+      "description": "Canonical status: SCHEDULED, IN_PROGRESS, COMPLETED, RETIREMENT, ..."
+    },
+    "duration_minutes": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Duration Minutes",
+      "description": "Duration in minutes"
+    },
+    "winner_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Winner Id",
+      "description": "Winner ID (null while the match is in progress)"
+    },
+    "loser_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Loser Id",
+      "description": "Loser ID (null while the match is in progress)"
+    },
+    "winner_sets_won": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Winner Sets Won",
+      "description": "Sets won by the winner; null while the match is in progress, when there is no winner yet -- read sets[] for the running count"
+    },
+    "loser_sets_won": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Loser Sets Won",
+      "description": "Sets won by the loser; null while the match is in progress, when there is no loser yet -- read sets[] for the running count"
+    },
+    "scheduled_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Scheduled At",
+      "description": "Full scheduled/kickoff timestamp (ISO 8601), when the source provides one"
+    },
+    "tournament_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tournament Name",
+      "description": "Tournament name as free text; populated even when `tournament`/`tournament_id` are not yet linked (e.g. a live match not yet reconciled to a tournament id)"
+    },
+    "round_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Round Name",
+      "description": "Human-readable round name, the same label the list routes return"
+    },
+    "winner": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisMatchParticipant"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Winner details (null while in progress)"
+    },
+    "loser": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisMatchParticipant"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Loser details (null while in progress)"
+    },
+    "player1": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisMatchParticipant"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical player1 (the winner once decided; always populated for a resolved match)"
+    },
+    "player2": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisMatchParticipant"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Canonical player2 (the loser once decided; always populated for a resolved match)"
+    },
+    "winner_side": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Winner Side",
+      "description": "Which side won: 1 (player1), 2 (player2), or null while in progress / unknown"
+    },
+    "sets": {
+      "items": {
+        "$ref": "#/$defs/TennisMatchSetItem"
+      },
+      "type": "array",
+      "title": "Sets",
+      "description": "Set-by-set box score"
+    },
+    "stats": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisMatchStatsSummary"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Match serving and return statistics"
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "match_date",
+    "surface",
+    "round",
+    "score"
+  ],
+  "$defs": {
+    "TennisMatchParticipant": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Id",
+          "description": "Player ID (null when unresolved, e.g. an unlinked doubles pair)"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Player full name"
+        },
+        "ioc": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ioc",
+          "description": "Country IOC code"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seed",
+          "description": "Tournament seed"
+        },
+        "entry": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Entry",
+          "description": "Entry code (e.g. Q, WC, LL, PR)"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rank",
+          "description": "Official rank at time of match"
+        },
+        "is_winner": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Is Winner",
+          "description": "Winner indicator"
+        }
+      },
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "title": "MatchParticipant",
+      "description": "Player participant summary in a match.\n\n``id`` is optional so this model also covers doubles pairs and live rows,\nwhere the feed has not resolved an individual player id (e.g. a combined\npair name like \"Bolelli S./Vavassori A.\" with no per-partner id)."
+    },
+    "TennisMatchSetItem": {
+      "properties": {
+        "set_number": {
+          "type": "integer",
+          "title": "Set Number",
+          "description": "Set number (1, 2, 3, 4, 5)"
+        },
+        "winner_games": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Winner Games",
+          "description": "Games won by match winner, once decided"
+        },
+        "loser_games": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Loser Games",
+          "description": "Games won by match loser, once decided"
+        },
+        "player1_games": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Player1 Games",
+          "description": "Games won by player1 (canonical, always populated)"
+        },
+        "player2_games": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Player2 Games",
+          "description": "Games won by player2 (canonical, always populated)"
+        },
+        "tiebreak": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TennisTiebreakDetail"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Tiebreak points if set reached tiebreak"
+        }
+      },
+      "type": "object",
+      "required": [
+        "set_number"
+      ],
+      "title": "MatchSetItem",
+      "description": "Set-by-set box score item.\n\n``set_number`` is the canonical field name shared with the live feed\n(which otherwise calls this ``set_num``). ``player1_games``/``player2_games``\nare the canonical per-side fields, always populated; ``winner_games``/\n``loser_games`` stay for back-compat and are populated once a winner is\nknown (null while the match this set belongs to is still in progress)."
+    },
+    "TennisMatchStatsSummary": {
+      "properties": {
+        "winner": {
+          "$ref": "#/$defs/TennisPlayerMatchStats"
+        },
+        "loser": {
+          "$ref": "#/$defs/TennisPlayerMatchStats"
+        }
+      },
+      "type": "object",
+      "required": [
+        "winner",
+        "loser"
+      ],
+      "title": "MatchStatsSummary",
+      "description": "Combined match statistics for winner and loser."
+    },
+    "TennisPlayerMatchStats": {
+      "properties": {
+        "aces": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Aces",
+          "description": "Aces served"
+        },
+        "double_faults": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Double Faults",
+          "description": "Double faults committed"
+        },
+        "serve_points": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Serve Points",
+          "description": "Total service points played"
+        },
+        "first_serves_in": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Serves In",
+          "description": "First serves in"
+        },
+        "first_serves_won": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Serves Won",
+          "description": "First serve points won"
+        },
+        "second_serves_won": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Second Serves Won",
+          "description": "Second serve points won"
+        },
+        "first_serve_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Serve Pct",
+          "description": "1st serve in %"
+        },
+        "first_serve_win_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Serve Win Pct",
+          "description": "1st serve points won %"
+        },
+        "second_serve_win_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Second Serve Win Pct",
+          "description": "2nd serve points won %"
+        },
+        "service_games_played": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Service Games Played",
+          "description": "Service games played"
+        },
+        "break_points_saved": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Break Points Saved",
+          "description": "Break points saved"
+        },
+        "break_points_faced": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Break Points Faced",
+          "description": "Break points faced"
+        },
+        "break_points_converted": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Break Points Converted",
+          "description": "Break points converted"
+        },
+        "break_point_opportunities": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Break Point Opportunities",
+          "description": "Break point chances"
+        },
+        "total_points_won": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Total Points Won",
+          "description": "Total points won"
+        }
+      },
+      "type": "object",
+      "title": "PlayerMatchStats",
+      "description": "Granular match statistics for a single player."
+    },
+    "TennisTiebreakDetail": {
+      "properties": {
+        "winner_points": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Winner Points",
+          "description": "Points scored by tiebreak winner"
+        },
+        "loser_points": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Loser Points",
+          "description": "Points scored by tiebreak loser"
+        }
+      },
+      "type": "object",
+      "title": "TiebreakDetail",
+      "description": "Tiebreak point breakdown."
+    },
+    "TennisTournamentSummaryInfo": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Id",
+          "description": "Tournament ID"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Tournament name"
+        },
+        "year": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Year",
+          "description": "Tournament year"
+        },
+        "surface": {
+          "type": "string",
+          "title": "Surface",
+          "description": "Surface"
+        },
+        "level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Level",
+          "description": "Tier code"
+        },
+        "category": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Category",
+          "description": "Canonical event category: grand_slam, masters_1000, wta_1000, tour_finals, atp_tour, wta_tour, challenger, itf, davis_cup, billie_jean_king_cup, other. ATP 250 and ATP 500 both report atp_tour because the source does not separate them"
+        },
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "City",
+          "description": "Host city"
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Country",
+          "description": "Host country code"
+        }
+      },
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "surface"
+      ],
+      "title": "TournamentSummaryInfo",
+      "description": "Tournament context metadata embedded in match detail."
+    }
+  }
+}

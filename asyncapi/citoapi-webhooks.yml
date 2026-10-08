@@ -1,0 +1,49 @@
+generated: '2026-10-08'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://citoapi.com/docs/webhooks/
+sources:
+- https://citoapi.com/docs/webhooks/
+- https://citoapi.com/docs/api/league-of-legends/
+- https://citoapi.com/webhooks/
+- https://citoapi.com/blog/lol-esports-webhooks-guide/
+description: Cito CS2 API webhooks provide signed JSON payloads for live esports events and support retries.
+events:
+- event: lol.match.started
+  description: Fired when a League of Legends match starts.
+- event: lol.match.completed
+  description: Fired when a League of Legends match finishes.
+- event: lol.score.updated
+  description: Fired when a series score changes.
+- event: lol.live.game_started
+  description: Fired when a live LoL game starts.
+- event: lol.live.state
+  description: Periodic live LoL state snapshot with gold, kills, towers, dragons, Barons, and game clock.
+- event: lol.live.gold_swing
+  description: Fired when the live gold lead changes materially.
+- event: lol.live.objective
+  description: Fired for Dragon, Baron, inhibitor, and tracked objective updates.
+- event: lol.live.kill_update
+  description: Fired when live kill totals change.
+- event: lol.live.tower_destroyed
+  description: Fired when tower totals change during live coverage.
+- event: lol.live.player_down
+  description: Fired when a player goes down on the live board.
+- event: lol.live.map_delta
+  description: Alive/death board delta when player state changes.
+- event: lol.live.pick_locked
+  description: Fired when a champion pick appears in official livestats draft metadata.
+- event: lol.live.ban_locked
+  description: Fired when a champion ban appears in live draft metadata (when upstream publishes bans).
+- event: cod.match.live_update
+  description: Fired for live COD map progression, score changes, and real-time telemetry during a series.
+- event: cod.match.completed
+  description: Fired only when a COD series is fully finalized and official stats are locked.
+- event: cod.transfer.new
+  description: Fired when a Call of Duty transfer is detected.
+- event: lol.gold_diff.changed
+  description: Live gold difference changed event delivered when gold totals shift.
+delivery:
+  signature: HMAC SHA‑256 signature in the X-Cito-Signature header
+  retries: Up to 3 delivery attempts per event with a 10‑second request timeout; X-Cito-Delivery-Attempt header indicates the attempt number
+docs: https://citoapi.com/docs/webhooks/

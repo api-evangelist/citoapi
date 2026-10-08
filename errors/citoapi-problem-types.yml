@@ -1,0 +1,61 @@
+generated: '2026-10-08'
+method: derived
+generator: derive-problem-types.py
+source:
+- openapi/_original/citoapi-v1-openapi.json
+format: custom
+envelope:
+  media_type: application/json
+  schema: Error
+coverage:
+  operations: 344
+  statuses_declared: 7
+problems:
+- status: 400
+  title: Bad Request
+  description: Validation error
+  operations: 3
+  media_types:
+  - application/json
+  schema: Error
+- status: 401
+  title: Unauthorized
+  description: Missing or invalid API key.
+  operations: 277
+  media_types:
+  - application/json
+  schema: Error
+- status: 403
+  title: Forbidden
+  description: Your plan does not include CS2.
+  operations: 150
+  media_types: []
+  schema: null
+- status: 404
+  title: Not Found
+  description: No record with that id or slug.
+  operations: 174
+  media_types:
+  - application/json
+  schema: RafError
+- status: 422
+  title: Unprocessable Content
+  description: Validation Error
+  operations: 50
+  media_types:
+  - application/json
+  schema: TennisHTTPValidationError
+- status: 429
+  title: Too Many Requests
+  description: Monthly request quota already used up when connecting. Mid-stream, the same limit arrives as an `error`
+    event and the stream closes.
+  operations: 2
+  media_types:
+  - application/json
+  schema: Error
+- status: 503
+  title: Service Unavailable
+  description: Live enrichment temporarily disabled.
+  operations: 1
+  media_types: []
+  schema: null

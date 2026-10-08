@@ -1,0 +1,424 @@
+generated: '2026-10-08'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/_original/citoapi-v1-openapi.json
+vocabulary:
+  name: Cito CS2 API Domain Vocabulary
+  description: 'Terms declared by Cito CS2 API''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-08'
+  terms:
+  - term: Call of Duty
+    definition: Call of Duty (CDL) matches, live scores, players, organizations, tournaments, standings, transfers, and leaderboards.
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: Fortnite
+    definition: Fortnite competitive matches, tournaments/events, live leaderboards, players, orgs, pro rankings, transfers, and earnings leaderboards.
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: Dota 2
+    definition: Dota 2 esports matches, teams, players, tournaments, player stats, and radar snapshots.
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: CS2
+    definition: 'Counter-Strike 2: live matches, results, maps, rounds, teams, players, events, rankings, stats and skins. **Beta.** CS2 is in
+      beta. If anything looks wrong, email support@citoapi.com with the endpoint and the id you called. Docs: https://citoapi.com/docs/api/cs2
+      **Response shape.** Every response is `{ success, data, meta }`. Lists put rows in `data` and counts or paging in `meta`. **Ids.** Matche'
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: UFC
+    definition: UFC rankings, fighters, fighter profile stats, events, fight cards, bouts, and results.
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: QR Code
+    definition: Generate QR codes with optional logo overlay.
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: Utility
+    definition: Health and status endpoints.
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: RAF Wrestling
+    definition: 'Real American Freestyle professional wrestling: events, cards, results with per-period scores and takedowns, athletes, champions
+      and live results.'
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: BKFC
+    definition: 'Bare Knuckle Fighting Championship: every event since 2018, full cards, results, round-by-round punch statistics, fighters, official
+      rankings and live cards.'
+    tags:
+    - Resource Group
+    source: openapi/_original/citoapi-v1-openapi.json
+  - term: Error
+    definition: 'Object declared by the contract with fields: success, error.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/Error
+  - term: QrGenerateBody
+    definition: 'Object declared by the contract with fields: data, size, format, foreground, background, margin, errorCorrection, logo.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/QrGenerateBody
+  - term: AllTimeTitleLeader
+    definition: Player with most titles at a tournament.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisAllTimeTitleLeader
+  - term: CalendarTournamentItem
+    definition: Tournament calendar event item.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisCalendarTournamentItem
+  - term: CareerSummary
+    definition: Aggregated career singles win-loss and title statistics.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisCareerSummary
+  - term: ClutchStats
+    definition: Clutch situational and tiebreak metrics.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisClutchStats
+  - term: DrawMatch
+    definition: Match node in tournament draw bracket.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisDrawMatch
+  - term: DrawPlayer
+    definition: Player participant node in bracket draw.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisDrawPlayer
+  - term: DrawRound
+    definition: Round grouping in bracket tree.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisDrawRound
+  - term: GrandSlamBreakdown
+    definition: Career performance across the four Grand Slam majors.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisGrandSlamBreakdown
+  - term: GrandSlamTournamentRecord
+    definition: Performance metrics for an individual Grand Slam tournament.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisGrandSlamTournamentRecord
+  - term: H2HDecidingSetsRecord
+    definition: Head-to-head deciding sets tally.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HDecidingSetsRecord
+  - term: H2HFormatBreakdown
+    definition: Head-to-head breakdown by match length (best of 3 vs best of 5).
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HFormatBreakdown
+  - term: H2HLevelBreakdown
+    definition: Head-to-head breakdown by tournament tier.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HLevelBreakdown
+  - term: H2HLevelItem
+    definition: Level-specific head-to-head record.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HLevelItem
+  - term: H2HMatchSummary
+    definition: Match summary in H2H chronology.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HMatchSummary
+  - term: H2HPlayerSummary
+    definition: Player summary for H2H rivalry comparison.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HPlayerSummary
+  - term: H2HSummary
+    definition: Head-to-head overall tallies.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HSummary
+  - term: H2HSurfaceBreakdown
+    definition: Head-to-head surface breakdown across Hard, Clay, Grass, Carpet.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HSurfaceBreakdown
+  - term: H2HSurfaceItem
+    definition: Surface-specific head-to-head record.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HSurfaceItem
+  - term: H2HTiebreakRecord
+    definition: Head-to-head tiebreak tally.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisH2HTiebreakRecord
+  - term: HTTPValidationError
+    definition: 'Object declared by the contract with fields: detail.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisHTTPValidationError
+  - term: HeadToHeadMatrixResponse
+    definition: Multi-player Head-to-Head comparison grid.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisHeadToHeadMatrixResponse
+  - term: HeadToHeadResponse
+    definition: Complete Head-to-Head rivalry dossier.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisHeadToHeadResponse
+  - term: ListResponse[CalendarTournamentItem]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisListResponse_CalendarTournamentItem_
+  - term: ListResponse[Dict[str, Any]]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisListResponse_Dict_str__Any__
+  - term: ListResponse[LiveMatchSummary]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisListResponse_LiveMatchSummary_
+  - term: ListResponse[PlayerListItem]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisListResponse_PlayerListItem_
+  - term: ListResponse[str]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisListResponse_str_
+  - term: LiveMatchDetail
+    definition: Detailed live match state snapshot.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisLiveMatchDetail
+  - term: LiveMatchSummary
+    definition: Live match summary in active feed list.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisLiveMatchSummary
+  - term: LivePlayerState
+    definition: Player status in an active live match.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisLivePlayerState
+  - term: LiveSetScore
+    definition: Set score item in live match. ``set_number`` is the canonical field name (shared with the match archive, which otherwise calls
+      this ``winner_games``/``loser_games``'s counterpart ``set_number``); ``set_num`` stays for back-compat.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisLiveSetScore
+  - term: MatchDetailResponse
+    definition: 'Comprehensive match detail response including set scores and stats. Serves both archived (completed) matches and matches still
+      on the live board: the canonical ``id``/``player1``/``player2``/``status``/``sets`` vocabulary is shared by both, so a customer can write
+      one Match type against ``/matches/{id}`` whatever state the match is in. ``winner_id``/ ``loser_id``/``winner``/``loser`` are null whil'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisMatchDetailResponse
+  - term: MatchListItem
+    definition: Summary item for match directory listing.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisMatchListItem
+  - term: MatchParticipant
+    definition: Player participant summary in a match. ``id`` is optional so this model also covers doubles pairs and live rows, where the feed
+      has not resolved an individual player id (e.g. a combined pair name like "Bolelli S./Vavassori A." with no per-partner id).
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisMatchParticipant
+  - term: MatchSetItem
+    definition: Set-by-set box score item. ``set_number`` is the canonical field name shared with the live feed (which otherwise calls this ``set_num``).
+      ``player1_games``/``player2_games`` are the canonical per-side fields, always populated; ``winner_games``/ ``loser_games`` stay for back-compat
+      and are populated once a winner is known (null while the match this set belongs to is still in progress).
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisMatchSetItem
+  - term: MatchStatsSummary
+    definition: Combined match statistics for winner and loser.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisMatchStatsSummary
+  - term: PaginatedResponse[MatchListItem]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPaginatedResponse_MatchListItem_
+  - term: PaginatedResponse[PlayerListItem]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPaginatedResponse_PlayerListItem_
+  - term: PaginatedResponse[TournamentListItem]
+    definition: 'Object declared by the contract with fields: items, total, page, page_size, total_pages, has_next, has_prev.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPaginatedResponse_TournamentListItem_
+  - term: PlayerBatchResponse
+    definition: Many players in one call. `missing` names the ids that did not resolve.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPlayerBatchResponse
+  - term: PlayerListItem
+    definition: Summary item for player listing and filtering.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPlayerListItem
+  - term: PlayerMatchStats
+    definition: Granular match statistics for a single player.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPlayerMatchStats
+  - term: PlayerProfile
+    definition: Comprehensive player profile and biographical record.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPlayerProfile
+  - term: PlayerRankingHistoryResponse
+    definition: Career historical ranking time-series and peak records.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPlayerRankingHistoryResponse
+  - term: PlayerStatsResponse
+    definition: Detailed career statistics response with optional filtering.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPlayerStatsResponse
+  - term: RankingHistoryPoint
+    definition: Single time-series ranking data point for a player.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisRankingHistoryPoint
+  - term: RankingItem
+    definition: Single ranking entry in weekly leaderboard.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisRankingItem
+  - term: RankingsListResponse
+    definition: Paginated ranking leaderboard for a given tour and week.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisRankingsListResponse
+  - term: ReturnStats
+    definition: Detailed return metrics and percentages.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisReturnStats
+  - term: ServingStats
+    definition: Detailed serving metrics and percentages.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisServingStats
+  - term: SimulationRequest
+    definition: Control request to simulate live match state transitions.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisSimulationRequest
+  - term: SimulationResponse
+    definition: Result of live simulation action.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisSimulationResponse
+  - term: SurfaceBreakdown
+    definition: Breakdown of matches and records across surface types.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisSurfaceBreakdown
+  - term: SurfaceStatItem
+    definition: Statistics for a specific court surface.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisSurfaceStatItem
+  - term: TiebreakDetail
+    definition: Tiebreak point breakdown.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisTiebreakDetail
+  - term: TournamentDetailResponse
+    definition: Comprehensive tournament dossier and historical editions.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisTournamentDetailResponse
+  - term: TournamentDrawResponse
+    definition: Full interactive draw bracket tree.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisTournamentDrawResponse
+  - term: TournamentListItem
+    definition: Summary item for tournament catalog.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisTournamentListItem
+  - term: TournamentSummaryInfo
+    definition: Tournament context metadata embedded in match detail.
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisTournamentSummaryInfo
+  - term: ValidationError
+    definition: 'Object declared by the contract with fields: loc, msg, type, input, ctx.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisValidationError
+  - term: RafError
+    definition: 'Object declared by the contract with fields: success, error.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/RafError
+  - term: RafSearchResult
+    definition: 'Object declared by the contract with fields: type, slug, name, score.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/RafSearchResult
+  - term: RafEvent
+    definition: 'Object declared by the contract with fields: slug, name, headline, type, number, sequence, status, cancellation, previousDates,
+      date, localTime, timezone. (5 more)'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/RafEvent
+  - term: RafBout
+    definition: 'Object declared by the contract with fields: boutId, event, order, slot, weightClass, titleFight, status, athletes, winner, result,
+      periods, periodScoresReliable. (1 more)'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/RafBout
+  - term: RafAthlete
+    definition: 'Object declared by the contract with fields: slug, name, gender, country, hometown, club, age, record, titles.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/RafAthlete
+  - term: RafTitle
+    definition: 'Object declared by the contract with fields: titleKey, name, type, gender, vacant, champion.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/RafTitle
+  - term: BkfcError
+    definition: 'Object declared by the contract with fields: success, error.'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/BkfcError
+  - term: BkfcStatLine
+    definition: 'Object declared by the contract with fields: landed, thrown, missed, knockdowns, headLanded, headThrown, bodyLanded, bodyThrown,
+      distanceLanded, distanceThrown, clinchLanded, clinchThrown. (5 more)'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/BkfcStatLine
+  - term: BkfcEvent
+    definition: 'Object declared by the contract with fields: slug, name, type, number, status, date, localTime, timezone, startsAt, previousDates,
+      location, bouts. (1 more)'
+    tags:
+    - Object
+    source: openapi/_original/citoapi-v1-openapi.json#/components/schemas/BkfcEvent

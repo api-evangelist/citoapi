@@ -1,0 +1,17 @@
+generated: '2026-10-08'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://citoapi.com/docs/authentication/
+sources:
+- https://citoapi.com/docs/authentication/
+- https://citoapi.com/docs/authentication/
+- https://citoapi.com/pt-br/docs/authentication/
+- https://docs.citoapi.com/docs/authentication/
+description: Cito API uses API keys to authenticate requests.
+schemes:
+- type: apiKey
+  name: API Key
+  evidence: Cito API uses API keys to authenticate requests.
+  location: header
+  header: x-api-key
+docs: https://citoapi.com/docs/authentication/

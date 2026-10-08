@@ -1,0 +1,456 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/citoapi/main/json-schema/citoapi-tennis-player-profile-schema.json",
+  "title": "PlayerProfile",
+  "description": "Comprehensive player profile and biographical record.",
+  "x-generated": "2026-10-08",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisPlayerProfile",
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Id",
+      "description": "Unique player identifier"
+    },
+    "tour": {
+      "type": "string",
+      "title": "Tour",
+      "description": "Tour federation: ATP or WTA"
+    },
+    "first_name": {
+      "type": "string",
+      "title": "First Name",
+      "description": "Given name"
+    },
+    "last_name": {
+      "type": "string",
+      "title": "Last Name",
+      "description": "Surname"
+    },
+    "full_name": {
+      "type": "string",
+      "title": "Full Name",
+      "description": "Canonical display name"
+    },
+    "ioc": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Ioc",
+      "description": "3-letter country code"
+    },
+    "country_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Country Code",
+      "description": "Same 3-letter code as ioc, under the key most client integrations read"
+    },
+    "portrait_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Portrait Url",
+      "description": "Player portrait image URL, hosted by Cito; null when we hold no photo"
+    },
+    "portrait_attribution": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Portrait Attribution",
+      "description": "Who to credit for the portrait; display it with the image"
+    },
+    "portrait_license": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Portrait License",
+      "description": "Licence the portrait is published under, as stated by its source"
+    },
+    "portrait_source_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Portrait Source Url",
+      "description": "Page the portrait came from, for attribution and licence checks"
+    },
+    "country_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Country Name",
+      "description": "Country name derived from the IOC/ISO code; null when the code is unmapped"
+    },
+    "nationality": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Nationality",
+      "description": "Same value as country_name, under the key most client integrations read"
+    },
+    "hand": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Hand",
+      "description": "Playing hand",
+      "default": "U"
+    },
+    "backhand": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Backhand",
+      "description": "Backhand style (1H/2H) where known; not held for most players"
+    },
+    "dob": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Dob",
+      "description": "Date of birth"
+    },
+    "age": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Age",
+      "description": "Current age in years"
+    },
+    "height_cm": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Height Cm",
+      "description": "Height in cm"
+    },
+    "weight_kg": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Weight Kg",
+      "description": "Weight in kg"
+    },
+    "turned_pro": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Turned Pro",
+      "description": "Year turned pro"
+    },
+    "career_high_rank": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Career High Rank",
+      "description": "Career peak ranking"
+    },
+    "career_high_date": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Career High Date",
+      "description": "Date peak ranking was attained"
+    },
+    "weeks_at_no_1": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Weeks At No 1",
+      "description": "Total weeks ranked at world No. 1",
+      "default": 0
+    },
+    "current_rank": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Current Rank",
+      "description": "Current ranking"
+    },
+    "current_rank_points": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Current Rank Points",
+      "description": "Current ranking points"
+    },
+    "career_summary": {
+      "$ref": "#/$defs/TennisCareerSummary",
+      "description": "Overall career summary record"
+    },
+    "surface_breakdown": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisSurfaceBreakdown"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Surface win-loss splits"
+    },
+    "is_active": {
+      "type": "boolean",
+      "title": "Is Active",
+      "description": "Active status",
+      "default": true
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "tour",
+    "first_name",
+    "last_name",
+    "full_name",
+    "career_summary"
+  ],
+  "$defs": {
+    "TennisCareerSummary": {
+      "properties": {
+        "matches_played": {
+          "type": "integer",
+          "title": "Matches Played",
+          "description": "Total official matches played"
+        },
+        "matches_won": {
+          "type": "integer",
+          "title": "Matches Won",
+          "description": "Total matches won"
+        },
+        "matches_lost": {
+          "type": "integer",
+          "title": "Matches Lost",
+          "description": "Total matches lost"
+        },
+        "win_percentage": {
+          "type": "number",
+          "title": "Win Percentage",
+          "description": "Career win percentage (0.0 to 100.0)"
+        },
+        "titles_count": {
+          "type": "integer",
+          "title": "Titles Count",
+          "description": "Singles titles won"
+        },
+        "grand_slam_titles": {
+          "type": "integer",
+          "title": "Grand Slam Titles",
+          "description": "Grand Slam singles titles won",
+          "default": 0
+        },
+        "masters_titles": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Masters Titles",
+          "description": "Masters 1000 singles titles where computed; null when not"
+        },
+        "finals_reached": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finals Reached",
+          "description": "Singles finals reached where computed; null when not"
+        },
+        "prize_money_usd": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Prize Money Usd",
+          "description": "Not held by this dataset; always null"
+        }
+      },
+      "type": "object",
+      "required": [
+        "matches_played",
+        "matches_won",
+        "matches_lost",
+        "win_percentage",
+        "titles_count"
+      ],
+      "title": "CareerSummary",
+      "description": "Aggregated career singles win-loss and title statistics."
+    },
+    "TennisSurfaceBreakdown": {
+      "properties": {
+        "hard": {
+          "$ref": "#/$defs/TennisSurfaceStatItem"
+        },
+        "clay": {
+          "$ref": "#/$defs/TennisSurfaceStatItem"
+        },
+        "grass": {
+          "$ref": "#/$defs/TennisSurfaceStatItem"
+        },
+        "carpet": {
+          "$ref": "#/$defs/TennisSurfaceStatItem"
+        }
+      },
+      "type": "object",
+      "required": [
+        "hard",
+        "clay",
+        "grass",
+        "carpet"
+      ],
+      "title": "SurfaceBreakdown",
+      "description": "Breakdown of matches and records across surface types."
+    },
+    "TennisSurfaceStatItem": {
+      "properties": {
+        "matches": {
+          "type": "integer",
+          "title": "Matches",
+          "description": "Matches played on this surface"
+        },
+        "won": {
+          "type": "integer",
+          "title": "Won",
+          "description": "Matches won on this surface"
+        },
+        "lost": {
+          "type": "integer",
+          "title": "Lost",
+          "description": "Matches lost on this surface"
+        },
+        "win_pct": {
+          "type": "number",
+          "title": "Win Pct",
+          "description": "Win percentage on this surface"
+        },
+        "titles": {
+          "type": "integer",
+          "title": "Titles",
+          "description": "Titles won on this surface",
+          "default": 0
+        }
+      },
+      "type": "object",
+      "required": [
+        "matches",
+        "won",
+        "lost",
+        "win_pct"
+      ],
+      "title": "SurfaceStatItem",
+      "description": "Statistics for a specific court surface."
+    }
+  }
+}

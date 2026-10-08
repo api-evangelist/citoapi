@@ -1,31 +1,74 @@
 aid: citoapi
 name: Cito CS2 API
-description: 'Cito CS2 API provides live data for Counter-Strike 2, League of Legends, Dota 2, Call of Duty, Apex Legends, and UFC. It aggregates match scores, player statistics, team rosters, rankings, and skin/item prices across dozens of marketplaces, delivering clean JSON via a single API key. The service includes an MCP server for agent integration and SDKs for JavaScript and Python, targeting developers building esports analytics, betting, or game‑related applications.'
+image: https://citoapi.com/images/og-image.png
+description: Cito CS2 API provides live data for Counter-Strike 2, League of Legends, Dota 2, Call of Duty, Apex Legends, and UFC. It aggregates
+  match scores, player statistics, team rosters, rankings, and skin/item prices across dozens of marketplaces, delivering clean JSON via a single
+  API key. The service includes an MCP server for agent integration and SDKs for JavaScript and Python, targeting developers building esports
+  analytics, betting, or game‑related applications.
 url: https://raw.githubusercontent.com/api-evangelist/citoapi/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:new-submission
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-10-08 (modular-v1; was harvest)
 specificationVersion: '0.20'
 created: '2026-10-08'
 modified: '2026-10-08'
 tags:
 - Company
-apis: []
+- API
+- Esports
+- Gaming
+- Data
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Spectral
+  url: rules/citoapi-rules.yml
+- type: JSONLD
+  url: json-ld/citoapi-context.jsonld
+- type: Vocabulary
+  url: vocabulary/citoapi-vocabulary.yml
+- type: Conformance
+  url: conformance/citoapi-conformance.yml
+- type: RateLimits
+  url: rate-limits/citoapi-rate-limits.yml
+- type: Plans
+  url: plans/citoapi-plans-pricing.yml
+- type: Webhooks
+  url: asyncapi/citoapi-webhooks.yml
+- type: DataModel
+  url: data-model/citoapi-data-model.yml
+- type: ChangeLog
+  url: changelog/citoapi-changelog.yml
+- type: Authentication
+  url: authentication/citoapi-authentication.yml
+- type: ErrorCatalog
+  url: errors/citoapi-problem-types.yml
+- type: LLMsTxt
+  url: llms/citoapi-llms.txt
+- type: WellKnown
+  url: well-known/citoapi-well-known.yml
+- type: Hosts
+  url: hosts/citoapi-hosts.yml
+- type: Vendors
+  url: vendors/citoapi-vendors.yml
+- type: Webhooks
+  url: https://citoapi.com/webhooks/
+- type: StatusPage
+  url: https://citoapi.com/status/
+- type: Sandbox
+  url: https://citoapi.com/playground/
+- type: ChangeLog
+  url: https://citoapi.com/docs/changelog/
 - type: DomainSecurity
   url: security/citoapi-domain-security.yml
 - type: Website
   url: https://citoapi.com/
 - type: Documentation
   url: https://citoapi.com/docs/api/cs2
-- type: DeveloperPortal
-  url: https://citoapi.com/
 - type: APIReference
   url: https://citoapi.com/docs/api/cs2
 - type: GettingStarted
@@ -34,8 +77,6 @@ common:
   url: https://citoapi.com/contact/
 - type: Blog
   url: https://citoapi.com/blog/
-- type: GitHubOrganization
-  url: https://github.com/achillesscriptsvip
 - type: Pricing
   url: https://citoapi.com/pricing/
 - type: SignUp
@@ -44,12 +85,42 @@ common:
   url: https://citoapi.com/terms/
 - type: PrivacyPolicy
   url: https://citoapi.com/privacy/
-- type: Postman
-  url: https://www.postman.com/collections/xxxxx
-x-submission-notes: Slug is the company (citoapi), not the 'cito-cs2-api' product; covers CS2, LoL, Dota
-  2, CoD, Apex, UFC. Data provenance undisclosed (skin prices across 25+ marketplaces, UFC bookmaker odds
-  aggregation) -- worth a glance but no stated scraping. MCP is npm-only (cito-mcp).
-x-submission-probe: root/docs 200; /openapi.json 200 (OpenAPI 3.1, 26 paths, titled 'Cito UFC API', server
-  api.citoapi.com/api/v1); llms.txt 200; soft-404 clean (404); api.citoapi.com/api/v1/cs2/matches 401
-  MISSING_API_KEY JSON; invented API path 404 JSON
+apis:
+- name: Cito UFC API
+  description: Cito UFC API provides esports data including UFC match info and statistics.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  aid: citoapi:cito-ufc-api
+- aid: citoapi:cito-api-v1-api
+  name: Cito API V1 API
+  description: 'Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling,
+
+    BKFC).'
+  humanURL: https://api.citoapi.com/v1/openapi.json
+  baseURL: https://api.citoapi.com/api/v1
+  properties:
+  - type: OpenAPI
+    url: openapi/_original/citoapi-v1-openapi.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+x-submission-notes: Slug is the company (citoapi), not the 'cito-cs2-api' product; covers CS2, LoL, Dota 2, CoD, Apex, UFC. Data provenance undisclosed
+  (skin prices across 25+ marketplaces, UFC bookmaker odds aggregation) -- worth a glance but no stated scraping. MCP is npm-only (cito-mcp).
+x-submission-probe: root/docs 200; /openapi.json 200 (OpenAPI 3.1, 26 paths, titled 'Cito UFC API', server api.citoapi.com/api/v1); llms.txt 200;
+  soft-404 clean (404); api.citoapi.com/api/v1/cs2/matches 401 MISSING_API_KEY JSON; invented API path 404 JSON
 x-submitted-by: support@citoapi.com (apis.io/add, 2026-10-06T22:34:11.862Z)
+x-enrichment:
+  date: '2026-10-08'
+  status: enriched
+  artifacts_added: 28
+  pass: modular-v1
+  engine: identity=local,contract=local,surfaces=local,docs=local,regulatory=local

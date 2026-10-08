@@ -1,0 +1,388 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/citoapi/main/json-schema/citoapi-tennis-live-match-detail-schema.json",
+  "title": "LiveMatchDetail",
+  "description": "Detailed live match state snapshot.",
+  "x-generated": "2026-10-08",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisLiveMatchDetail",
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Id",
+      "description": "Canonical match identifier (same value as match_id)"
+    },
+    "match_id": {
+      "type": "string",
+      "title": "Match Id",
+      "description": "Unique live match ID"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Started At",
+      "description": "When the match went in-play (ISO 8601)"
+    },
+    "round_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Round Name",
+      "description": "Human label for the round code"
+    },
+    "tour": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tour",
+      "description": "ATP or WTA"
+    },
+    "tournament_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tournament Id",
+      "description": "Tournament id once this match is reconciled to a tournament; null while it is still on the live feed"
+    },
+    "tournament_name": {
+      "type": "string",
+      "title": "Tournament Name",
+      "description": "Tournament name"
+    },
+    "court": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Court",
+      "description": "Court name"
+    },
+    "best_of": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Best Of",
+      "description": "Best of 3 or 5",
+      "default": 3
+    },
+    "round": {
+      "type": "string",
+      "title": "Round",
+      "description": "Round"
+    },
+    "surface": {
+      "type": "string",
+      "title": "Surface",
+      "description": "Surface",
+      "default": "Hard"
+    },
+    "status": {
+      "type": "string",
+      "title": "Status",
+      "description": "Status",
+      "default": "IN_PROGRESS"
+    },
+    "player1": {
+      "$ref": "#/$defs/TennisLivePlayerState",
+      "description": "Player 1 state"
+    },
+    "player2": {
+      "$ref": "#/$defs/TennisLivePlayerState",
+      "description": "Player 2 state"
+    },
+    "winner_side": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Winner Side",
+      "description": "1 or 2 once decided; null while in progress"
+    },
+    "current_set": {
+      "type": "integer",
+      "title": "Current Set",
+      "description": "Current set number",
+      "default": 1
+    },
+    "game_score": {
+      "type": "string",
+      "title": "Game Score",
+      "description": "Current game point score",
+      "default": "0-0"
+    },
+    "server": {
+      "type": "integer",
+      "title": "Server",
+      "description": "Current server index (1 or 2)",
+      "default": 1
+    },
+    "tiebreak_score": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tiebreak Score",
+      "description": "Active tiebreak score"
+    },
+    "sets": {
+      "items": {
+        "$ref": "#/$defs/TennisLiveSetScore"
+      },
+      "type": "array",
+      "title": "Sets",
+      "description": "Set scores"
+    },
+    "point_history": {
+      "anyOf": [
+        {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Point History",
+      "description": "Recent point timeline"
+    },
+    "stats": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "type": "array",
+      "title": "Stats",
+      "description": "Per-side match statistics"
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "match_id",
+    "tournament_name",
+    "round",
+    "player1",
+    "player2"
+  ],
+  "$defs": {
+    "TennisLivePlayerState": {
+      "properties": {
+        "id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Id",
+          "description": "Player ID"
+        },
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "description": "Player display name"
+        },
+        "ioc": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Ioc",
+          "description": "Country IOC code, the same key the match and h2h participant objects use"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Seed",
+          "description": "Tournament seed"
+        },
+        "sets_won": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sets Won",
+          "description": "Completed sets won in this match",
+          "default": 0
+        },
+        "current_game_score": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Current Game Score",
+          "description": "Current point score (0, 15, 30, 40, AD)",
+          "default": "0"
+        },
+        "is_serving": {
+          "type": "boolean",
+          "title": "Is Serving",
+          "description": "Whether this player is currently serving",
+          "default": false
+        }
+      },
+      "type": "object",
+      "required": [
+        "name"
+      ],
+      "title": "LivePlayerState",
+      "description": "Player status in an active live match."
+    },
+    "TennisLiveSetScore": {
+      "properties": {
+        "set_num": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Set Num",
+          "description": "Set number"
+        },
+        "set_number": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Set Number",
+          "description": "Canonical set number (same value as set_num)"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Score",
+          "description": "Set score string"
+        },
+        "player1_games": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Player1 Games",
+          "description": "Games won by Player 1"
+        },
+        "player2_games": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Player2 Games",
+          "description": "Games won by Player 2"
+        },
+        "tiebreak": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Tiebreak",
+          "description": "Tiebreak score if applicable"
+        },
+        "is_completed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Is Completed",
+          "description": "Whether this set is concluded"
+        }
+      },
+      "type": "object",
+      "title": "LiveSetScore",
+      "description": "Set score item in live match.\n\n``set_number`` is the canonical field name (shared with the match\narchive, which otherwise calls this ``winner_games``/``loser_games``'s\ncounterpart ``set_number``); ``set_num`` stays for back-compat."
+    }
+  }
+}

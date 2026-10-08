@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/citoapi/main/json-schema/citoapi-tennis-tournament-detail-response-schema.json",
+  "title": "TournamentDetailResponse",
+  "description": "Comprehensive tournament dossier and historical editions.",
+  "x-generated": "2026-10-08",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/_original/citoapi-v1-openapi.json#/components/schemas/TennisTournamentDetailResponse",
+  "properties": {
+    "id": {
+      "type": "string",
+      "title": "Id",
+      "description": "Tournament ID"
+    },
+    "name": {
+      "type": "string",
+      "title": "Name",
+      "description": "Tournament name"
+    },
+    "tour": {
+      "type": "string",
+      "title": "Tour",
+      "description": "Tour"
+    },
+    "level": {
+      "type": "string",
+      "title": "Level",
+      "description": "Level tier"
+    },
+    "category": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Category",
+      "description": "Canonical event category: grand_slam, masters_1000, wta_1000, tour_finals, atp_tour, wta_tour, challenger, itf, davis_cup, billie_jean_king_cup, other. ATP 250 and ATP 500 both report atp_tour because the source does not separate them"
+    },
+    "tier": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tier",
+      "description": "Tier name"
+    },
+    "surface": {
+      "type": "string",
+      "title": "Surface",
+      "description": "Surface"
+    },
+    "draw_size": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Draw Size",
+      "description": "Draw size",
+      "default": 32
+    },
+    "city": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "City",
+      "description": "City"
+    },
+    "country_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Country Code",
+      "description": "Country code"
+    },
+    "first_edition_year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "First Edition Year",
+      "description": "First recorded edition of this event"
+    },
+    "most_recent_edition_year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Most Recent Edition Year",
+      "description": "Most recent recorded edition"
+    },
+    "all_time_title_leader": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TennisAllTimeTitleLeader"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Most finals won across every edition; ties broken by most recent"
+    },
+    "year": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Year",
+      "description": "Edition year, the same field the list, draw and embedded forms of this tournament carry"
+    },
+    "is_live_shell": {
+      "type": "boolean",
+      "title": "Is Live Shell",
+      "description": "True for a live-feed container (s365_*) holding archived live results, with default tier/surface and no geography",
+      "default": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "tour",
+    "level",
+    "surface"
+  ],
+  "$defs": {
+    "TennisAllTimeTitleLeader": {
+      "properties": {
+        "player_id": {
+          "type": "string",
+          "title": "Player Id",
+          "description": "Player ID"
+        },
+        "player_name": {
+          "type": "string",
+          "title": "Player Name",
+          "description": "Player full name"
+        },
+        "titles": {
+          "type": "integer",
+          "title": "Titles",
+          "description": "Titles count"
+        }
+      },
+      "type": "object",
+      "required": [
+        "player_id",
+        "player_name",
+        "titles"
+      ],
+      "title": "AllTimeTitleLeader",
+      "description": "Player with most titles at a tournament."
+    }
+  }
+}

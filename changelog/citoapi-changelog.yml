@@ -1,0 +1,75 @@
+generated: '2026-10-08'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://citoapi.com/docs/changelog/
+sources:
+- https://citoapi.com/docs/changelog/
+- https://citoapi.com/docs/changelog/
+- https://citoapi.com/pt-br/docs/changelog/
+- https://docs.citoapi.com/docs/changelog/
+entries:
+- breaking: false
+  highlights:
+  - 'NEW UFC Live REST: /ufc/live, live bout detail, event supervisor, lag metadata'
+  - NEW UFC Live SSE stream at /ufc/live/stream for push-style clients
+  - NEW UFC WebSockets (/ufc/live/ws) available now — room subscribe for bout + event
+  - IMPROVED Fight-night clocks and live stats path for scoreboards and bots
+  date: '2026-07-25'
+- breaking: false
+  highlights:
+  - NEW Added webhook support for real-time event subscriptions
+  - NEW New regional endpoints for lower latency
+  - IMPROVED Reduced average response time by 40%
+  - IMPROVED Better error messages with suggested fixes
+  date: '2026-01-15'
+- breaking: true
+  highlights:
+  - BREAKING Pagination now uses cursor-based approach
+  - BREAKING Renamed /matches endpoint to /matches/live
+  - NEW Added Dota 2 API
+  - NEW Added League of Legends API
+  - IMPROVED Unified response format across all games
+  date: '2025-12-01'
+- breaking: false
+  highlights:
+  - NEW Added Call of Duty (Warzone & CDL) support
+  - NEW Player comparison endpoint
+  - IMPROVED Expanded Fortnite player and tournament statistics
+  - FIXED Fixed rate limit header calculation
+  date: '2025-10-15'
+- breaking: false
+  highlights:
+  - NEW Added UFC event and bout data
+  - NEW Team roster endpoints
+  - IMPROVED Faster player lookup response times
+  date: '2025-09-01'
+- breaking: false
+  highlights:
+  - NEW Historical match data (last 100 games)
+  - NEW Leaderboard search endpoint
+  - IMPROVED Better date filtering options
+  - FIXED Fixed timezone issues in match timestamps
+  date: '2025-07-20'
+- breaking: false
+  highlights:
+  - NEW Added Fortnite API beta
+  - NEW SDK for Python
+  - IMPROVED Increased rate limits for Builder plans
+  date: '2025-06-01'
+- breaking: false
+  highlights:
+  - NEW Tournament standings endpoint
+  - NEW Regional leaderboards
+  - IMPROVED Expanded player statistics
+  - FIXED Fixed FNCS point calculations
+  date: '2025-04-15'
+- breaking: false
+  highlights:
+  - NEW Initial public release
+  - NEW Fortnite API with live matches, player stats, tournaments
+  - NEW JavaScript SDK
+  - NEW Dashboard and API key management
+  date: '2025-03-01'
+scheme: v X.Y.Z
+current_version: 2.2.0
+docs: https://citoapi.com/docs/changelog/
