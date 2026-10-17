@@ -1,0 +1,1702 @@
+openapi: 3.2.0
+info:
+  title: Cito BKFC API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: BKFC
+  description: 'Bare Knuckle Fighting Championship: every event since 2018, full cards, results, round-by-round punch statistics, fighters, official rankings and live cards.'
+paths:
+  /bkfc:
+    get:
+      tags:
+      - BKFC
+      summary: BKFC overview
+      description: Counts, next event, current champions.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfc
+      x-operation-id-source: derived
+  /bkfc/search:
+    get:
+      tags:
+      - BKFC
+      summary: Search fighters and events
+      description: Name, nickname or slug to ids.
+      parameters:
+      - name: q
+        in: query
+        required: true
+        description: Search text.
+        schema:
+          type: string
+      - name: type
+        in: query
+        required: false
+        description: fighter or event
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        description: Page size (max 100).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcSearch
+      x-operation-id-source: derived
+  /bkfc/sync/status:
+    get:
+      tags:
+      - BKFC
+      summary: Data freshness
+      description: Last successful sync and counts.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcSyncStatus
+      x-operation-id-source: derived
+  /bkfc/events:
+    get:
+      tags:
+      - BKFC
+      summary: List events
+      description: 'Every BKFC event since 2018, newest first. Alias: /fight-cards.'
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: scheduled, live, completed, cancelled (comma-separated)
+        schema:
+          type: string
+      - name: type
+        in: query
+        required: false
+        description: numbered, fight_night, prospect, other
+        schema:
+          type: string
+      - name: from
+        in: query
+        required: false
+        description: Earliest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        description: Latest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: q
+        in: query
+        required: false
+        description: Name / venue filter
+        schema:
+          type: string
+      - name: includeBouts
+        in: query
+        required: false
+        description: Add each card
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        description: Page number.
+        schema:
+          type: integer
+          minimum: 1
+      - name: limit
+        in: query
+        required: false
+        description: Page size (max 100).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BkfcEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcEvents
+      x-operation-id-source: derived
+  /bkfc/events/upcoming:
+    get:
+      tags:
+      - BKFC
+      summary: Upcoming events
+      description: Scheduled and live cards, soonest first, with full cards.
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        description: Page size (max 100).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BkfcEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcEventsUpcoming
+      x-operation-id-source: derived
+  /bkfc/events/recent:
+    get:
+      tags:
+      - BKFC
+      summary: Recent results
+      description: Completed events, newest first.
+      parameters:
+      - name: includeBouts
+        in: query
+        required: false
+        description: Add each card
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        required: false
+        description: Page size (max 100).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BkfcEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcEventsRecent
+      x-operation-id-source: derived
+  /bkfc/events/{slug}:
+    get:
+      tags:
+      - BKFC
+      summary: Event detail
+      description: Event with its full card in official order.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Event slug (bkfc-50-denver; "bkfc-50" also resolves).
+        schema:
+          type: string
+      - name: includeRounds
+        in: query
+        required: false
+        description: Add round-by-round punch stats to each bout.
+        schema:
+          type: boolean
+      - name: includeCancelled
+        in: query
+        required: false
+        description: Include bouts that left the card (with the reason).
+        schema:
+          type: boolean
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    $ref: '#/components/schemas/BkfcEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcEventsBySlug
+      x-operation-id-source: derived
+  /bkfc/events/{slug}/bouts:
+    get:
+      tags:
+      - BKFC
+      summary: Event card
+      description: 'Every bout on the card. Aliases: /fights, /fight-card, /card; /results returns completed bouts only.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Event slug (bkfc-50-denver; "bkfc-50" also resolves).
+        schema:
+          type: string
+      - name: includeRounds
+        in: query
+        required: false
+        description: Add round-by-round punch stats to each bout.
+        schema:
+          type: boolean
+      - name: includeCancelled
+        in: query
+        required: false
+        description: Include bouts that left the card (with the reason).
+        schema:
+          type: boolean
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BkfcBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcEventsBySlugBouts
+      x-operation-id-source: derived
+  /bkfc/bouts:
+    get:
+      tags:
+      - BKFC
+      summary: Query bouts
+      description: 'Bouts across all events. Alias: /fights.'
+      parameters:
+      - name: event
+        in: query
+        required: false
+        description: Event slug
+        schema:
+          type: string
+      - name: fighter
+        in: query
+        required: false
+        description: Fighter slug or name (adds a perspective block)
+        schema:
+          type: string
+      - name: opponent
+        in: query
+        required: false
+        description: Opponent slug or name
+        schema:
+          type: string
+      - name: weightClass
+        in: query
+        required: false
+        description: e.g. middleweight
+        schema:
+          type: string
+      - name: method
+        in: query
+        required: false
+        description: ko, tko, decision_unanimous, decision_split, decision_majority, dq, draw, no_contest (comma-separated)
+        schema:
+          type: string
+      - name: title
+        in: query
+        required: false
+        description: Title fights only
+        schema:
+          type: boolean
+      - name: status
+        in: query
+        required: false
+        description: scheduled, live, completed, cancelled
+        schema:
+          type: string
+      - name: from
+        in: query
+        required: false
+        description: Earliest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        description: Latest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: includeCancelled
+        in: query
+        required: false
+        description: Include bouts that left the card (with the reason).
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        description: Page number.
+        schema:
+          type: integer
+          minimum: 1
+      - name: limit
+        in: query
+        required: false
+        description: Page size (max 100).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BkfcBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcBouts
+      x-operation-id-source: derived
+  /bkfc/bouts/{boutId}:
+    get:
+      tags:
+      - BKFC
+      summary: Bout detail
+      description: Result, method, round and time, referee, weigh-in weights, totals and round-by-round punch stats.
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        description: 'Bout id from an event card: {event}--{fighterA}--{fighterB}.'
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    $ref: '#/components/schemas/BkfcBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcBoutsByBoutId
+      x-operation-id-source: derived
+  /bkfc/bouts/{boutId}/rounds:
+    get:
+      tags:
+      - BKFC
+      summary: Round-by-round punch stats
+      description: 'Per corner per round: landed/thrown/missed, head/body, distance/clinch, knockdowns. Alias: /stats. Starter plan and above.'
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        description: 'Bout id from an event card: {event}--{fighterA}--{fighterB}.'
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcBoutsByBoutIdRounds
+      x-operation-id-source: derived
+  /bkfc/fighters:
+    get:
+      tags:
+      - BKFC
+      summary: List fighters
+      description: 'Roster with records. Alias: /athletes.'
+      parameters:
+      - name: q
+        in: query
+        required: false
+        description: Name / nickname
+        schema:
+          type: string
+      - name: division
+        in: query
+        required: false
+        description: e.g. middleweight
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        description: Active / Inactive
+        schema:
+          type: string
+      - name: nationality
+        in: query
+        required: false
+        description: Country
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: Page number.
+        schema:
+          type: integer
+          minimum: 1
+      - name: limit
+        in: query
+        required: false
+        description: Page size (max 100).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BkfcFighter'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcFighters
+      x-operation-id-source: derived
+  /bkfc/fighters/{slug}:
+    get:
+      tags:
+      - BKFC
+      summary: Fighter profile
+      description: Bio, record, rankings, recent and upcoming fights.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Fighter slug (e.g. mike-perry), alias or feed id.
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    $ref: '#/components/schemas/BkfcFighter'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcFightersBySlug
+      x-operation-id-source: derived
+  /bkfc/fighters/{slug}/fights:
+    get:
+      tags:
+      - BKFC
+      summary: Fight history
+      description: 'Every bout from the fighter''s perspective. Aliases: /history, /bouts, /matches.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Fighter slug (e.g. mike-perry), alias or feed id.
+        schema:
+          type: string
+      - name: includeRounds
+        in: query
+        required: false
+        description: Add round-by-round punch stats to each bout.
+        schema:
+          type: boolean
+      - name: includeCancelled
+        in: query
+        required: false
+        description: Include bouts that left the card (with the reason).
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        description: Page number.
+        schema:
+          type: integer
+          minimum: 1
+      - name: limit
+        in: query
+        required: false
+        description: Page size (max 100).
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BkfcBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcFightersBySlugFights
+      x-operation-id-source: derived
+  /bkfc/fighters/{slug}/stats:
+    get:
+      tags:
+      - BKFC
+      summary: Career punch stats
+      description: Landed/thrown/accuracy, absorbed, per bout and per minute, head/body and distance/clinch, knockdowns, wins by method. Starter plan and above.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Fighter slug (e.g. mike-perry), alias or feed id.
+        schema:
+          type: string
+      - name: from
+        in: query
+        required: false
+        description: Earliest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        description: Latest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcFightersBySlugStats
+      x-operation-id-source: derived
+  /bkfc/h2h:
+    get:
+      tags:
+      - BKFC
+      summary: Head-to-head
+      description: 'Meetings and record between two fighters. Alias: /head-to-head, /fighters/{slug}/h2h/{opponent}.'
+      parameters:
+      - name: fighter1
+        in: query
+        required: true
+        description: Slug or name
+        schema:
+          type: string
+      - name: fighter2
+        in: query
+        required: true
+        description: Slug or name
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcH2h
+      x-operation-id-source: derived
+  /bkfc/rankings:
+    get:
+      tags:
+      - BKFC
+      summary: Official rankings
+      description: Champion, interim champion and ranked fighters per division (latest snapshot).
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcRankings
+      x-operation-id-source: derived
+  /bkfc/rankings/{division}:
+    get:
+      tags:
+      - BKFC
+      summary: Division rankings
+      description: One division.
+      parameters:
+      - name: division
+        in: path
+        required: true
+        description: e.g. middleweight, womens-flyweight
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcRankingsByDivision
+      x-operation-id-source: derived
+  /bkfc/champions:
+    get:
+      tags:
+      - BKFC
+      summary: Current champions
+      description: Champion and interim champion per division.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcChampions
+      x-operation-id-source: derived
+  /bkfc/divisions:
+    get:
+      tags:
+      - BKFC
+      summary: Divisions
+      description: BKFC divisions with weight limits.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcDivisions
+      x-operation-id-source: derived
+  /bkfc/live:
+    get:
+      tags:
+      - BKFC
+      summary: Live cards
+      description: 'Cards in their event window: results so far, the bout in progress with live round stats, the full card.'
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcLive
+      x-operation-id-source: derived
+  /bkfc/live/health:
+    get:
+      tags:
+      - BKFC
+      summary: Live pipeline health
+      description: Poll interval and freshness.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcLiveHealth
+      x-operation-id-source: derived
+  /bkfc/live/stream:
+    get:
+      tags:
+      - BKFC
+      summary: Live stream (SSE)
+      description: 'Server-sent events: bout_result, bout_update (round stats), card_change, ping. Billed one request per interval while open.'
+      parameters:
+      - name: eventSlug
+        in: query
+        required: false
+        description: Only this event
+        schema:
+          type: string
+      - name: boutId
+        in: query
+        required: false
+        description: Only this bout
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcLiveStream
+      x-operation-id-source: derived
+  /bkfc/live/{boutId}:
+    get:
+      tags:
+      - BKFC
+      summary: Live bout
+      description: Bout with live round stats.
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        description: 'Bout id from an event card: {event}--{fighterA}--{fighterB}.'
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    $ref: '#/components/schemas/BkfcBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+        '404':
+          description: Error (BKFC_EVENT_NOT_FOUND, BKFC_BOUT_NOT_FOUND, BKFC_FIGHTER_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BkfcError'
+      operationId: getBkfcLiveByBoutId
+      x-operation-id-source: derived
+components:
+  schemas:
+    BkfcFighter:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        nickname:
+          type:
+          - string
+          - 'null'
+        gender:
+          type:
+          - string
+          - 'null'
+        division:
+          type:
+          - string
+          - 'null'
+        status:
+          type:
+          - string
+          - 'null'
+        nationality:
+          type:
+          - string
+          - 'null'
+        birthMonth:
+          type:
+          - string
+          - 'null'
+          example: 1987-09
+        heightCm:
+          type:
+          - number
+          - 'null'
+        reachCm:
+          type:
+          - number
+          - 'null'
+        record:
+          type: object
+          properties:
+            wins:
+              type: integer
+            losses:
+              type: integer
+            draws:
+              type: integer
+            noContests:
+              type: integer
+            koWins:
+              type: integer
+    BkfcError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            status:
+              type: integer
+            docs:
+              type: string
+    BkfcBout:
+      type: object
+      properties:
+        boutId:
+          type: string
+        event:
+          type: object
+        order:
+          type:
+          - integer
+          - 'null'
+          description: 1 = main event
+        section:
+          type:
+          - string
+          - 'null'
+        slot:
+          type:
+          - string
+          - 'null'
+        weightClass:
+          type: object
+        titleFight:
+          type: boolean
+        scheduledRounds:
+          type:
+          - integer
+          - 'null'
+        roundSeconds:
+          type:
+          - integer
+          - 'null'
+        status:
+          type: string
+          enum:
+          - scheduled
+          - live
+          - completed
+          - cancelled
+        fighters:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: object
+            properties:
+              corner:
+                type: string
+                enum:
+                - red
+                - blue
+              slug:
+                type: string
+              name:
+                type: string
+              nickname:
+                type:
+                - string
+                - 'null'
+              weighInLb:
+                type:
+                - number
+                - 'null'
+              result:
+                type:
+                - string
+                - 'null'
+              totals:
+                $ref: '#/components/schemas/BkfcStatLine'
+        winner:
+          type:
+          - object
+          - 'null'
+        result:
+          type:
+          - object
+          - 'null'
+          properties:
+            outcome:
+              type: string
+            method:
+              type: string
+            methodText:
+              type: string
+            round:
+              type: integer
+            time:
+              type: string
+            elapsedSeconds:
+              type: integer
+        referee:
+          type:
+          - string
+          - 'null'
+        statsAvailable:
+          type: boolean
+        rounds:
+          type: array
+          items:
+            type: object
+            properties:
+              round:
+                type: integer
+              red:
+                $ref: '#/components/schemas/BkfcStatLine'
+              blue:
+                $ref: '#/components/schemas/BkfcStatLine'
+        cancellation:
+          type:
+          - object
+          - 'null'
+          properties:
+            reason:
+              type: string
+              enum:
+              - removed_from_card
+              - moved
+              - opponent_changed
+              - event_cancelled
+              - not_in_official_results
+            movedToEvent:
+              type:
+              - string
+              - 'null'
+            replacedByBoutId:
+              type:
+              - string
+              - 'null'
+            removedAt:
+              type:
+              - string
+              - 'null'
+    BkfcEvent:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: bkfc-50-denver
+        name:
+          type: string
+        type:
+          type: string
+        number:
+          type:
+          - integer
+          - 'null'
+        status:
+          type: string
+          enum:
+          - scheduled
+          - live
+          - completed
+          - cancelled
+          - postponed
+        date:
+          type: string
+          format: date
+        localTime:
+          type:
+          - string
+          - 'null'
+        timezone:
+          type:
+          - string
+          - 'null'
+        startsAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        previousDates:
+          type: array
+          items:
+            type: string
+            format: date
+        location:
+          type: object
+          properties:
+            venue:
+              type:
+              - string
+              - 'null'
+            text:
+              type:
+              - string
+              - 'null'
+            city:
+              type:
+              - string
+              - 'null'
+            region:
+              type:
+              - string
+              - 'null'
+            country:
+              type:
+              - string
+              - 'null'
+        bouts:
+          type: object
+          properties:
+            total:
+              type: integer
+            completed:
+              type: integer
+        card:
+          type: array
+          items:
+            $ref: '#/components/schemas/BkfcBout'
+    BkfcStatLine:
+      type:
+      - object
+      - 'null'
+      properties:
+        landed:
+          type:
+          - integer
+          - 'null'
+        thrown:
+          type:
+          - integer
+          - 'null'
+        missed:
+          type:
+          - integer
+          - 'null'
+        knockdowns:
+          type:
+          - integer
+          - 'null'
+        headLanded:
+          type:
+          - integer
+          - 'null'
+        headThrown:
+          type:
+          - integer
+          - 'null'
+        bodyLanded:
+          type:
+          - integer
+          - 'null'
+        bodyThrown:
+          type:
+          - integer
+          - 'null'
+        distanceLanded:
+          type:
+          - integer
+          - 'null'
+        distanceThrown:
+          type:
+          - integer
+          - 'null'
+        clinchLanded:
+          type:
+          - integer
+          - 'null'
+        clinchThrown:
+          type:
+          - integer
+          - 'null'
+        distanceHeadLanded:
+          type:
+          - integer
+          - 'null'
+        distanceBodyLanded:
+          type:
+          - integer
+          - 'null'
+        clinchHeadLanded:
+          type:
+          - integer
+          - 'null'
+        clinchBodyLanded:
+          type:
+          - integer
+          - 'null'
+        accuracyPct:
+          type:
+          - number
+          - 'null'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

@@ -1,0 +1,6273 @@
+openapi: 3.2.0
+info:
+  title: Cito Tennis API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: Tennis
+paths:
+  /tennis/live/ws:
+    get:
+      summary: Tennis Live WebSocket (point-by-point)
+      operationId: tennisLiveWebsocket
+      tags:
+      - Tennis
+      description: 'WebSocket endpoint, not a plain GET: open it with an HTTP Upgrade to wss://api.citoapi.com/api/v1/tennis/live/ws. Push feed for live tennis. Requires an API key with tennis access AND the live-WebSocket add-on; without the add-on the upgrade is refused. Auth on the upgrade, any one of: x-api-key header, Authorization: Bearer, ?apiKey= or ?x-api-key= in the query string. On connect the server sends a self-describing {"type":"ready"} frame carrying the protocol and event list, so a client can discover the contract at runtime. Client frames: {"action":"subscribe","rooms":["match:{matchId}","all"]}, {"action":"unsubscribe","rooms":[...]}, {"action":"ping"}. Max 32 rooms per connection. Server frames: {"type":"subscribed"}, {"type":"pong"}, {"type":"error","code":"INVALID_JSON"|"BAD_ROOMS"}, and the events {"type":"POINT_UPDATE"} and {"type":"MATCH_FINISHED"}, each carrying a data object keyed by match_id. matchId values come from /tennis/matches/live. There is no SSE variant for tennis; the WebSocket is the only push transport.'
+      responses:
+        '101':
+          description: 'Switching Protocols: the WebSocket is open.'
+        '401':
+          description: Missing or invalid API key on the upgrade request.
+        '403':
+          description: API key lacks tennis access or the live-WebSocket add-on.
+  /tennis/health:
+    get:
+      tags:
+      - Tennis
+      summary: Service Health Check
+      description: Returns application health and database connection status.
+      operationId: tennis_health_check_health_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Health Check Health Get
+      security:
+      - ApiKeyAuth: []
+  /tennis/health/sync:
+    get:
+      tags:
+      - Tennis
+      summary: Background Sync Status
+      description: Returns status and execution timestamps of background sync jobs.
+      operationId: tennis_health_sync_health_sync_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Health Sync Health Sync Get
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/live:
+    get:
+      tags:
+      - Tennis
+      summary: List Active Live Matches
+      description: Retrieves all currently active in-progress tennis matches with live scores.
+      operationId: tennis_list_live_matches_matches_live_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Max live matches to return
+          title: Limit
+        description: Max live matches to return
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit
+          title: Page Size
+        description: Alias for limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisListResponse_LiveMatchSummary_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/upcoming:
+    get:
+      tags:
+      - Tennis
+      summary: Upcoming Scheduled Matches
+      description: 'Scheduled fixtures for the next ~3 days, soonest first.
+
+
+        Fed by the same source as the live board; a fixture keeps its match_id
+
+        when it goes live, so ids are stable across upcoming -> live -> finished.'
+      operationId: tennis_list_upcoming_matches_matches_upcoming_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Max fixtures to return
+          default: 100
+          title: Limit
+        description: Max fixtures to return
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit
+          title: Page Size
+        description: Alias for limit
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisListResponse_Dict_str__Any__'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/live/{match_id}:
+    get:
+      tags:
+      - Tennis
+      summary: Get Detailed Live Match State
+      description: Retrieves real-time score, point history, and server for an active match.
+      operationId: tennis_get_live_match_matches_live__match_id__get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisLiveMatchDetail'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/players:
+    get:
+      tags:
+      - Tennis
+      summary: List & Filter Players
+      description: Retrieves a paginated list of tennis players matching search and filter criteria.
+      operationId: tennis_list_players_players_get
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Player name search query
+          title: Q
+        description: Player name search query
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Tour: ATP or WTA'
+          title: Tour
+        description: 'Tour: ATP or WTA'
+      - name: ioc
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 3-letter country IOC code
+          title: Ioc
+        description: 3-letter country IOC code
+      - name: hand
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Hand: R, L, A, U'
+          title: Hand
+        description: 'Hand: R, L, A, U'
+      - name: is_active
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Active status
+          title: Is Active
+        description: Active status
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Sort field: rank (default, ranked players first) | full_name | last_name | dob'
+          default: rank
+          title: Sort By
+        description: 'Sort field: rank (default, ranked players first) | full_name | last_name | dob'
+      - name: order
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Sort order: asc or desc'
+          default: asc
+          title: Order
+        description: 'Sort order: asc or desc'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Page number (1-indexed)
+          default: 1
+          title: Page
+        description: Page number (1-indexed)
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Items per page (max 100)
+          default: 20
+          title: Page Size
+        description: Items per page (max 100)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 100
+            minimum: 1
+          - type: 'null'
+          description: Alias for page_size
+          title: Limit
+        description: Alias for page_size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPaginatedResponse_PlayerListItem_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/players/search:
+    get:
+      tags:
+      - Tennis
+      summary: Player Autocomplete Search
+      description: Fast prefix search for player autocomplete dropdowns.
+      operationId: tennis_search_players_players_search_get
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          description: Prefix search term (min 2 characters)
+          title: Q
+        description: Prefix search term (min 2 characters)
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional tour filter (ATP/WTA)
+          title: Tour
+        description: Optional tour filter (ATP/WTA)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Max results limit
+          default: 10
+          title: Limit
+        description: Max results limit
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit, matching the paginated routes
+          title: Page Size
+        description: Alias for limit, matching the paginated routes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisListResponse_PlayerListItem_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/players/batch:
+    get:
+      tags:
+      - Tennis
+      summary: Fetch Many Players by ID
+      description: 'One call for a roster. Rows use the same shape as /players; ids that
+
+        do not resolve are listed in `missing` rather than silently dropped.'
+      operationId: tennis_get_players_batch_players_batch_get
+      parameters:
+      - name: ids
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Comma-separated player ids, at most 50 (e.g. atp_207989,wta_211768)
+          title: Ids
+        description: Comma-separated player ids, at most 50 (e.g. atp_207989,wta_211768)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPlayerBatchResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/players/{player_id}:
+    get:
+      tags:
+      - Tennis
+      summary: Get Player Biographical Profile
+      description: Retrieves full biographical profile and career summary for a specific player.
+      operationId: tennis_get_player_players__player_id__get
+      parameters:
+      - name: player_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Player Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPlayerProfile'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/players/{player_id}/stats:
+    get:
+      tags:
+      - Tennis
+      summary: Get Player Detailed Career Statistics
+      description: 'Retrieves deep career metrics: surface breakdown, serving metrics, and return records.'
+      operationId: tennis_get_player_stats_players__player_id__stats_get
+      parameters:
+      - name: player_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Player Id
+      - name: surface
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Court surface: Hard, Clay, Grass, Carpet'
+          title: Surface
+        description: 'Court surface: Hard, Clay, Grass, Carpet'
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Tournament level tier: G, M, A, F, D, C'
+          title: Level
+        description: 'Tournament level tier: G, M, A, F, D, C'
+      - name: year_from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Filter matches from year
+          title: Year From
+        description: Filter matches from year
+      - name: year_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Filter matches up to year
+          title: Year To
+        description: Filter matches up to year
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPlayerStatsResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches:
+    get:
+      tags:
+      - Tennis
+      summary: Query Match Archive
+      description: Retrieves paginated match history with flexible filters.
+      operationId: tennis_list_matches_matches_get
+      parameters:
+      - name: player_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Matches involving this player
+          title: Player Id
+        description: Matches involving this player
+      - name: opponent_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Matches against this opponent
+          title: Opponent Id
+        description: Matches against this opponent
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Tour: ATP or WTA'
+          title: Tour
+        description: 'Tour: ATP or WTA'
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Calendar year
+          title: Year
+        description: Calendar year
+      - name: date_start
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: Start date (YYYY-MM-DD)
+          title: Date Start
+        description: Start date (YYYY-MM-DD)
+      - name: date_end
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: End date (YYYY-MM-DD)
+          title: Date End
+        description: End date (YYYY-MM-DD)
+      - name: date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: Single day (YYYY-MM-DD); same as date_start=date_end
+          title: Date
+        description: Single day (YYYY-MM-DD); same as date_start=date_end
+      - name: from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: Alias for date_start
+          title: From
+        description: Alias for date_start
+      - name: to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: Alias for date_end
+          title: To
+        description: Alias for date_end
+      - name: surface
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Surface: Hard, Clay, Grass, Carpet'
+          title: Surface
+        description: 'Surface: Hard, Clay, Grass, Carpet'
+      - name: tournament_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Specific tournament ID
+          title: Tournament Id
+        description: Specific tournament ID
+      - name: round
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Round code: F, SF, QF, R16, R32, R64, R128, RR, Q, Q1, Q2, Q3, BR, ER. Prose forms (''Final'', ''Round of 32'') are accepted too'
+          title: Round
+        description: 'Round code: F, SF, QF, R16, R32, R64, R128, RR, Q, Q1, Q2, Q3, BR, ER. Prose forms (''Final'', ''Round of 32'') are accepted too'
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Level: G, M, A, F, D, C, itf, junior, or an ITF prize level (15, 25, M25, W100)'
+          title: Level
+        description: 'Level: G, M, A, F, D, C, itf, junior, or an ITF prize level (15, 25, M25, W100)'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Page number (1-indexed)
+          default: 1
+          title: Page
+        description: Page number (1-indexed)
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          description: Items per page
+          default: 20
+          title: Page Size
+        description: Items per page
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 100
+            minimum: 1
+          - type: 'null'
+          description: Alias for page_size
+          title: Limit
+        description: Alias for page_size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPaginatedResponse_MatchListItem_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/recent:
+    get:
+      tags:
+      - Tennis
+      summary: Get Recent Tour Matches
+      description: Retrieves recent completed matches.
+      operationId: tennis_get_recent_matches_matches_recent_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Level
+          title: Level
+        description: Level
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Limit count
+          default: 20
+          title: Limit
+        description: Limit count
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit, matching the paginated routes
+          title: Page Size
+        description: Alias for limit, matching the paginated routes
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisListResponse_Dict_str__Any__'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/completed:
+    get:
+      tags:
+      - Tennis
+      summary: Completed Matches for a Day
+      description: 'Returns finalised ATP/WTA match records for one calendar day.
+
+
+        This is the convenient daily-results endpoint; use ``/matches`` for broader
+
+        archive filters. Dates use the source match date rather than request-local time.'
+      operationId: tennis_get_completed_matches_for_day_matches_completed_get
+      parameters:
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          description: Match date in YYYY-MM-DD (UTC match date)
+          title: Date
+        description: Match date in YYYY-MM-DD (UTC match date)
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Optional tour filter: ATP or WTA'
+          title: Tour
+        description: 'Optional tour filter: ATP or WTA'
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Optional tournament level filter
+          title: Level
+        description: Optional tournament level filter
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Page number (1-indexed)
+          default: 1
+          title: Page
+        description: Page number (1-indexed)
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Items per page
+          default: 50
+          title: Page Size
+        description: Items per page
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPaginatedResponse_MatchListItem_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/{match_id}:
+    get:
+      tags:
+      - Tennis
+      summary: Get Match Details & Box Score
+      description: Retrieves full match score, set breakdown, and match serving/return stats.
+      operationId: tennis_get_match_matches__match_id__get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisMatchDetailResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/{match_id}/tournament-link:
+    get:
+      tags:
+      - Tennis
+      summary: Resolve a Match Id to Its Tournament (Any Id Dialect)
+      description: 'Accepts any match id dialect (bare live s365_, archived
+
+        s365__, or atp___) and reports what
+
+        tournament it belongs to. `tournament_id` is only ever a verified FK from
+
+        the match archive; a live/upcoming match that has not been reconciled to
+
+        a tournament row yet reports `tournament_id: null` with `tournament_name`
+
+        (free text) and a `reason`, rather than a guessed id.'
+      operationId: tennis_get_match_tournament_link_matches__match_id__tournament_link_get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Match Tournament Link Matches  Match Id  Tournament Link Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/h2h:
+    get:
+      tags:
+      - Tennis
+      summary: Head-to-Head Rivalry Record
+      description: Calculates symmetric Head-to-Head match records, win-loss tallies, and surface splits.
+      operationId: tennis_get_head_to_head_h2h_get
+      parameters:
+      - name: player1_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: First player ID
+          title: Player1 Id
+        description: First player ID
+      - name: player2_id
+        in: query
+        required: true
+        schema:
+          type: string
+          description: Second player ID
+          title: Player2 Id
+        description: Second player ID
+      - name: surface
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by surface (Hard, Clay, Grass, Carpet)
+          title: Surface
+        description: Filter by surface (Hard, Clay, Grass, Carpet)
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by tournament tier (G, M, A, F, D, C)
+          title: Level
+        description: Filter by tournament tier (G, M, A, F, D, C)
+      - name: year_from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Start year
+          title: Year From
+        description: Start year
+      - name: year_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: End year
+          title: Year To
+        description: End year
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHeadToHeadResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/h2h/matrix:
+    get:
+      tags:
+      - Tennis
+      summary: Multi-Player H2H Grid
+      description: Generates comparison grid matrix for a group of players.
+      operationId: tennis_get_head_to_head_matrix_h2h_matrix_get
+      parameters:
+      - name: player_ids
+        in: query
+        required: true
+        schema:
+          type: array
+          items:
+            type: string
+          description: Player IDs, either repeated (player_ids=a&player_ids=b) or comma-separated (player_ids=a,b), matching /players/batch
+          title: Player Ids
+        description: Player IDs, either repeated (player_ids=a&player_ids=b) or comma-separated (player_ids=a,b), matching /players/batch
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHeadToHeadMatrixResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/rankings:
+    get:
+      tags:
+      - Tennis
+      summary: Weekly ATP/WTA Rankings Table
+      description: Retrieves weekly ATP/WTA rankings. If mid-week date is provided, resolves to preceding Monday.
+      operationId: tennis_list_rankings_rankings_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Tour federation: ATP or WTA'
+          title: Tour
+        description: 'Tour federation: ATP or WTA'
+      - name: circuit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+          title: Circuit
+        description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+      - name: date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: Ranking publication date (YYYY-MM-DD)
+          title: Date
+        description: Ranking publication date (YYYY-MM-DD)
+      - name: rank_min
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Minimum rank number
+          default: 1
+          title: Rank Min
+        description: Minimum rank number
+      - name: rank_max
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2000
+          minimum: 1
+          description: Maximum rank number
+          default: 100
+          title: Rank Max
+        description: Maximum rank number
+      - name: country_code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Filter by 3-letter IOC code
+          title: Country Code
+        description: Filter by 3-letter IOC code
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Page number (1-indexed)
+          default: 1
+          title: Page
+        description: Page number (1-indexed)
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Items per page
+          default: 50
+          title: Page Size
+        description: Items per page
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for page_size
+          title: Limit
+        description: Alias for page_size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisRankingsListResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/rankings/top:
+    get:
+      tags:
+      - Tennis
+      summary: Top N Rankings Snapshot
+      description: Instant snapshot of top ranked players.
+      operationId: tennis_get_top_rankings_rankings_top_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: circuit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+          title: Circuit
+        description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+      - name: top_n
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Number of top players (e.g. 10, 20, 50, 100)
+          default: 10
+          title: Top N
+        description: Number of top players (e.g. 10, 20, 50, 100)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for top_n
+          title: Limit
+        description: Alias for top_n
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for top_n
+          title: Page Size
+        description: Alias for top_n
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Top Rankings Rankings Top Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/rankings/movers:
+    get:
+      tags:
+      - Tennis
+      summary: Ranking Movers Between Published Lists
+      description: 'Climbers, fallers, new entries and drop-outs between a published list and the one before it.
+
+        The two lists can be weeks apart when the archive has gaps, which is why both dates are in the response.
+
+        movement = previous_rank - rank; both dates are named so the number can be checked.'
+      operationId: tennis_get_ranking_movers_rankings_movers_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: circuit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+          title: Circuit
+        description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+      - name: date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: 'Ranking date to compare against its predecessor (default: latest)'
+          title: Date
+        description: 'Ranking date to compare against its predecessor (default: latest)'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Rows per list
+          default: 20
+          title: Limit
+        description: Rows per list
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit, matching the paginated routes
+          title: Page Size
+        description: Alias for limit, matching the paginated routes
+      - name: within
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2000
+          minimum: 1
+          description: Only players inside the top N on either list
+          default: 100
+          title: Within
+        description: Only players inside the top N on either list
+      - name: direction
+        in: query
+        required: false
+        schema:
+          type: string
+          description: up (climbers), down (fallers), or both (largest absolute change)
+          default: up
+          title: Direction
+        description: up (climbers), down (fallers), or both (largest absolute change)
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Ranking Movers Rankings Movers Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/rankings/dates:
+    get:
+      tags:
+      - Tennis
+      summary: List Available Ranking Dates
+      description: Retrieves all distinct official ranking publication dates.
+      operationId: tennis_get_ranking_dates_rankings_dates_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: circuit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+          title: Circuit
+        description: 'Synonym for tour, matching the /rankings/{circuit} path form: ATP or WTA'
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Optional year
+          title: Year
+        description: Optional year
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Max dates to return (most recent first)
+          title: Limit
+        description: Max dates to return (most recent first)
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit
+          title: Page Size
+        description: Alias for limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisListResponse_str_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/standings:
+    get:
+      tags:
+      - Tennis
+      summary: Tour Standings (latest singles rankings)
+      description: 'Current tour standings: the latest published singles list, top first.
+
+
+        `tour`/`circuit` pick the federation exactly as on /rankings. `category`
+
+        is accepted for competitor parity; this dataset holds singles rankings
+
+        only, so doubles answers the same structured 404 the circuit guard uses
+
+        rather than an empty table that looks like nobody plays doubles.'
+      operationId: tennis_get_standings_standings_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: circuit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Synonym for tour: ATP or WTA'
+          title: Circuit
+        description: 'Synonym for tour: ATP or WTA'
+      - name: category
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: singles or doubles
+          default: singles
+          title: Category
+        description: singles or doubles
+      - name: top_n
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Standings rows (e.g. 10, 20, 50, 100)
+          default: 10
+          title: Top N
+        description: Standings rows (e.g. 10, 20, 50, 100)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for top_n
+          title: Limit
+        description: Alias for top_n
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for top_n
+          title: Page Size
+        description: Alias for top_n
+      - name: date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: 'Ranking publication date (YYYY-MM-DD, default: latest)'
+          title: Date
+        description: 'Ranking publication date (YYYY-MM-DD, default: latest)'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Standings Standings Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/rankings/history/{player_id}:
+    get:
+      tags:
+      - Tennis
+      summary: Player Career Ranking Trajectory
+      description: Retrieves career historical ranking progression and peak ranking for a player.
+      operationId: tennis_get_ranking_history_rankings_history__player_id__get
+      parameters:
+      - name: player_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Player Id
+      - name: date_start
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: Start date
+          title: Date Start
+        description: Start date
+      - name: date_end
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          description: End date
+          title: Date End
+        description: End date
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPlayerRankingHistoryResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments:
+    get:
+      tags:
+      - Tennis
+      summary: List & Filter Tournaments
+      description: Retrieves catalog of tennis tournaments across history.
+      operationId: tennis_list_tournaments_tournaments_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search, same as /players?q=
+          title: Q
+        description: Case-insensitive name search, same as /players?q=
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Edition year, e.g. 2026
+          title: Year
+        description: Edition year, e.g. 2026
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Level tier code: G, M, A, F, D, C'
+          title: Level
+        description: 'Level tier code: G, M, A, F, D, C'
+      - name: surface
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Surface: Hard, Clay, Grass, Carpet'
+          title: Surface
+        description: 'Surface: Hard, Clay, Grass, Carpet'
+      - name: include_live_shells
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Include live-feed containers (s365_*) that hold archived live results; excluded by default because they are not real events
+          default: false
+          title: Include Live Shells
+        description: Include live-feed containers (s365_*) that hold archived live results; excluded by default because they are not real events
+      - name: country_code
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Country IOC code
+          title: Country Code
+        description: Country IOC code
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          description: Page number (1-indexed)
+          default: 1
+          title: Page
+        description: Page number (1-indexed)
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          description: Items per page
+          default: 20
+          title: Page Size
+        description: Items per page
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for page_size
+          title: Limit
+        description: Alias for page_size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisPaginatedResponse_TournamentListItem_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments/calendar:
+    get:
+      tags:
+      - Tennis
+      summary: Annual Season Calendar
+      description: Retrieves annual schedule of tournaments for a given season.
+      operationId: tennis_get_tournament_calendar_tournaments_calendar_get
+      parameters:
+      - name: year
+        in: query
+        required: true
+        schema:
+          type: integer
+          description: Calendar year (e.g. 2023, 2024)
+          title: Year
+        description: Calendar year (e.g. 2023, 2024)
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Max tournaments to return
+          title: Limit
+        description: Max tournaments to return
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit
+          title: Page Size
+        description: Alias for limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisListResponse_CalendarTournamentItem_'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments/{tournament_id}:
+    get:
+      tags:
+      - Tennis
+      summary: Get Tournament Profile
+      description: Retrieves full profile, surface, and title records for a tournament.
+      operationId: tennis_get_tournament_tournaments__tournament_id__get
+      parameters:
+      - name: tournament_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tournament Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisTournamentDetailResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments/{tournament_id}/draw:
+    get:
+      tags:
+      - Tennis
+      summary: Get Tournament Draw Bracket
+      description: Builds interactive bracket draw tree for a tournament edition.
+      operationId: tennis_get_tournament_draw_tournaments__tournament_id__draw_get
+      parameters:
+      - name: tournament_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tournament Id
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Optional year edition
+          title: Year
+        description: Optional year edition
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisTournamentDrawResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments/{tournament_id}/editions/{year}/draw:
+    get:
+      tags:
+      - Tennis
+      summary: Get Specific Tournament Edition Draw
+      description: Builds interactive bracket draw tree for a specific tournament year edition.
+      operationId: tennis_get_tournament_edition_draw_tournaments__tournament_id__editions__year__draw_get
+      parameters:
+      - name: tournament_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tournament Id
+      - name: year
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Year
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisTournamentDrawResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments/{tournament_id}/bracket:
+    get:
+      tags:
+      - Tennis
+      summary: Get Tournament Bracket (draw-tree alias)
+      description: 'Bracket-tree alias of the draw endpoint: the same verified R128-to-Final
+
+        tree with seeds and entry designations (WC/Q/LL/PR), under the requested
+
+        /bracket path. Additive alias; the /draw routes are untouched.'
+      operationId: tennis_get_tournament_bracket_tournaments__tournament_id__bracket_get
+      parameters:
+      - name: tournament_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tournament Id
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Optional year edition
+          title: Year
+        description: Optional year edition
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisTournamentDrawResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/odds/upcoming:
+    get:
+      tags:
+      - Tennis
+      summary: Upcoming Matches With Odds
+      description: 'Fixtures with odds on the board (pre-match fixtures may not exist in the
+
+        results archive yet — use odds_event_id with /odds/{id}).'
+      operationId: tennis_get_upcoming_odds_odds_upcoming_get
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 100
+          title: Limit
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit
+          title: Page Size
+        description: Alias for limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Upcoming Odds Odds Upcoming Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/odds/{match_id}:
+    get:
+      tags:
+      - Tennis
+      summary: Pre-Match Odds
+      description: Latest stored odds for a match. spreads/totals are GAMES lines, decimal prices.
+      operationId: tennis_get_prematch_odds_odds__match_id__get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      - name: bookmakers
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Comma-separated book slugs (pinnacle,bet365,draftkings,fanduel,betfair_ex). Default: all available.'
+          title: Bookmakers
+        description: 'Comma-separated book slugs (pinnacle,bet365,draftkings,fanduel,betfair_ex). Default: all available.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Prematch Odds Odds  Match Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/odds/{match_id}/live:
+    get:
+      tags:
+      - Tennis
+      summary: Live (In-Play) Odds
+      description: Odds captured while the match is in play. Same shape and rules as pre-match.
+      operationId: tennis_get_live_odds_odds__match_id__live_get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      - name: bookmakers
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Comma-separated book slugs. Default: all available.'
+          title: Bookmakers
+        description: 'Comma-separated book slugs. Default: all available.'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Get Live Odds Odds  Match Id  Live Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/{match_id}/timeline:
+    get:
+      tags:
+      - Tennis
+      summary: Completed Match Timeline
+      description: Returns persisted set events; point-level history is retained for live-feed matches only.
+      operationId: tennis_match_timeline_matches__match_id__timeline_get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Match Timeline Matches  Match Id  Timeline Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/{match_id}/status:
+    get:
+      tags:
+      - Tennis
+      summary: Unified Match Status
+      description: Normalizes scheduled/live/final and exceptional match states into one small payload.
+      operationId: tennis_match_status_matches__match_id__status_get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Match Status Matches  Match Id  Status Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/schedule:
+    get:
+      tags:
+      - Tennis
+      summary: Daily Tennis Schedule
+      operationId: tennis_daily_schedule_schedule_get
+      parameters:
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date
+          description: Calendar date in the requested timezone
+          title: Date
+        description: Calendar date in the requested timezone
+      - name: timezone
+        in: query
+        required: false
+        schema:
+          type: string
+          description: IANA timezone, e.g. America/New_York
+          default: UTC
+          title: Timezone
+        description: IANA timezone, e.g. America/New_York
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Max scheduled matches to return
+          title: Limit
+        description: Max scheduled matches to return
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            maximum: 500
+            minimum: 1
+          - type: 'null'
+          description: Alias for limit
+          title: Page Size
+        description: Alias for limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Daily Schedule Schedule Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/players/{player_id}/form:
+    get:
+      tags:
+      - Tennis
+      summary: Player Recent Form
+      operationId: tennis_player_form_players__player_id__form_get
+      parameters:
+      - name: player_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Player Id
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 10
+          title: Limit
+      - name: surface
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Surface
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Player Form Players  Player Id  Form Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/aces:
+    get:
+      tags:
+      - Tennis
+      summary: Season Aces Leaderboard
+      description: 'Season ace totals per player, summed over winner and loser sides of real
+
+        match_stats rows joined to matches in the season. No defaults, no estimates:
+
+        a player with no stat rows simply does not appear.'
+      operationId: tennis_leaderboard_aces_leaderboards_aces_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Aces Leaderboards Aces Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/break-points-saved:
+    get:
+      tags:
+      - Tennis
+      summary: Season Break-Points-Saved Leaderboard
+      description: 'Share of break points saved per player, summed over winner and loser
+
+        sides of real match_stats rows joined to matches in the season. Only
+
+        players facing at least 50 break points qualify.'
+      operationId: tennis_leaderboard_bp_saved_leaderboards_break_points_saved_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Bp Saved Leaderboards Break Points Saved Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/1st-serve-won:
+    get:
+      tags:
+      - Tennis
+      summary: Season First-Serve-Won Leaderboard
+      description: 'Share of first-serve points won per player, summed over winner and
+
+        loser sides of real match_stats rows joined to matches in the season.
+
+        Only players with at least 300 first serves in qualify.'
+      operationId: tennis_leaderboard_first_serve_won_leaderboards_1st_serve_won_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard First Serve Won Leaderboards 1St Serve Won Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/break-conversion:
+    get:
+      tags:
+      - Tennis
+      summary: Season Break-Conversion Leaderboard
+      description: 'Share of break opportunities converted per player, from real
+
+        match_stats rows joined to matches in the season. Breaks are the exact
+
+        return-side mirror of the stored serve-side columns: a winner converts
+
+        (loser faced minus loser saved), a loser converts (winner faced minus
+
+        winner saved), over the corresponding faced total. Only players with at
+
+        least 50 break opportunities qualify (ATP 2026: 1089 eligible, tops
+
+        54.9-60.4). No defaults, no estimates: a player with no stat rows
+
+        simply does not appear.'
+      operationId: tennis_leaderboard_break_conversion_leaderboards_break_conversion_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Break Conversion Leaderboards Break Conversion Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/return-games-won:
+    get:
+      tags:
+      - Tennis
+      summary: Season Return-Games-Won Leaderboard
+      description: 'Share of return games won per player, from real match_stats rows
+
+        joined to matches in the season. Return games won are breaks achieved --
+
+        the exact return-side mirror of the stored serve-side columns: a winner
+
+        breaks (loser faced minus loser saved), a loser breaks (winner faced
+
+        minus winner saved) -- over the opponent''s service games played
+
+        (loser/winner sv_gms). sv_gms semantics are verified, not assumed: over
+
+        234,635 tiebreak-free matches, winner+loser sv_gms equals total set games
+
+        in 98.05%; over 96,174 tiebreak matches it equals total minus tiebreak
+
+        sets in 97.0% (tiebreaks are not service games, the correct tour
+
+        convention); derived breaks fit within sv_gms in 99.5% of 330,922
+
+        fully-populated rows; Alcaraz ATP 2026 comes out 31.3%, the realistic
+
+        tour-level band. Only players with at least 100 return games played
+
+        qualify (ATP 2026: 987 eligible, top 51.5; WTA 2026: 567 eligible, top
+
+        64.0). Rows missing any of the three opponent-side inputs are excluded,
+
+        never defaulted. No estimates: a player with no stat rows simply does
+
+        not appear.'
+      operationId: tennis_leaderboard_return_games_won_leaderboards_return_games_won_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Return Games Won Leaderboards Return Games Won Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/tiebreak-win-pct:
+    get:
+      tags:
+      - Tennis
+      summary: Season Tiebreak-Win-Pct Leaderboard
+      description: 'Share of tiebreaks won per player, from real match_sets rows joined to
+
+        matches in the season. Set rows are stored from the match winner side,
+
+        so a tiebreak goes to the winner side when winner_games > loser_games and
+
+        to the loser side otherwise; a 7-6 set without tiebreak point columns
+
+        counts the same way (the /h2h tiebreak_record predicate). Super tiebreaks
+
+        (10-point match tiebreaks) are excluded: this board rates classic 7-point
+
+        tiebreak play. Only players contesting at least 10 tiebreaks qualify
+
+        (ATP 2026: 361 eligible; WTA 2026: 13 eligible). No defaults, no
+
+        estimates: a player with no tiebreak sets simply does not appear.'
+      operationId: tennis_leaderboard_tiebreak_pct_leaderboards_tiebreak_win_pct_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Tiebreak Pct Leaderboards Tiebreak Win Pct Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/deciding-set-record:
+    get:
+      tags:
+      - Tennis
+      summary: Season Deciding-Set-Record Leaderboard
+      description: 'Share of deciding sets won per player, from real matches rows in the
+
+        season. A match reaches a decider exactly when winner_sets_won plus
+
+        loser_sets_won equals best_of (a Bo3 going the full 3 sets, a Bo5 going
+
+        the full 5); the match winner won that decider by definition, so winner
+
+        sides count won and loser sides count lost -- no set-level inference, no
+
+        estimates. best_of=1 exhibition rows are excluded: this board rates
+
+        full-format pressure play. Only players contesting at least 10 deciders
+
+        qualify (ATP 2026: 291 eligible; WTA 2026: 64 eligible; both tours
+
+        top 90.0 at ship time). A player with no deciders simply does not
+
+        appear.'
+      operationId: tennis_leaderboard_deciding_set_record_leaderboards_deciding_set_record_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Deciding Set Record Leaderboards Deciding Set Record Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/comeback-wins:
+    get:
+      tags:
+      - Tennis
+      summary: Season Comeback-Wins Leaderboard
+      description: 'Share of matches won after losing the first set, from real match_sets
+
+        rows (set_num=1) joined to matches in the season. Set rows are stored from
+
+        the match winner side, so the winner lost the opener exactly when
+
+        winner_games < loser_games on the set-1 row (verified 5/5 against
+
+        score_raw first sets); the match winner took that comeback by definition,
+
+        so winner sides count won when the opener went against them and loser
+
+        sides always count lost -- no inference, no estimates. Only COMPLETED
+
+        matches count: a retirement or walkover after set 1 is not a comeback.
+
+        Only players with first-set data on at least 20 matches qualify (ATP
+
+        2026: 594 eligible; WTA 2026: 210 eligible; tops ~27.6 at ship time). A
+
+        player with no set-1 rows simply does not appear.'
+      operationId: tennis_leaderboard_comeback_wins_leaderboards_comeback_wins_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Comeback Wins Leaderboards Comeback Wins Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/leaderboards/finals-record:
+    get:
+      tags:
+      - Tennis
+      summary: Season Finals-Record Leaderboard
+      description: 'Share of finals won per player, from real matches rows in the
+
+        season. A final is exactly round=''F'' (the only final code in the
+
+        store -- a FINAL-like round probe returns zero other variants); the
+
+        match winner lifted the title by definition, so winner sides count
+
+        won and loser sides count lost -- no inference, no estimates. Only
+
+        COMPLETED finals count: a retirement or walkover is not a title.
+
+        Only players contesting at least 3 finals qualify (ATP 2026: 66
+
+        eligible; WTA 2026: 31 eligible at ship time). A player with no
+
+        finals simply does not appear.'
+      operationId: tennis_leaderboard_finals_record_leaderboards_finals_record_get
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2030
+          minimum: 1968
+          default: 2026
+          title: Season
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 20
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Leaderboard Finals Record Leaderboards Finals Record Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments/{tournament_id}/edition:
+    get:
+      tags:
+      - Tennis
+      summary: Tournament Edition Metadata
+      operationId: tennis_tournament_edition_tournaments__tournament_id__edition_get
+      parameters:
+      - name: tournament_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tournament Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Tournament Edition Tournaments  Tournament Id  Edition Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/coverage:
+    get:
+      tags:
+      - Tennis
+      summary: Dataset Coverage
+      operationId: tennis_dataset_coverage_coverage_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                additionalProperties: true
+                type: object
+                title: Response Dataset Coverage Coverage Get
+      security:
+      - ApiKeyAuth: []
+  /tennis/h2h/{player1_id}/{player2_id}:
+    get:
+      tags:
+      - Tennis
+      summary: Head-to-Head (path form)
+      description: Path-parameter variant of /h2h for clients expecting /h2h/{a}/{b}.
+      operationId: tennis_h2h_path_form_h2h__player1_id___player2_id__get
+      parameters:
+      - name: player1_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Player1 Id
+      - name: player2_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Player2 Id
+      - name: surface
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Hard, Clay, Grass, Carpet
+          title: Surface
+        description: Hard, Clay, Grass, Carpet
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Tier code: G, M, A, F, D, C'
+          title: Level
+        description: 'Tier code: G, M, A, F, D, C'
+      - name: year_from
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year From
+      - name: year_to
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year To
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response H2H Path Form H2H  Player1 Id   Player2 Id  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/players/{player_id}/matches:
+    get:
+      tags:
+      - Tennis
+      summary: Player Match Log
+      description: All matches for one player, newest first — profile match logs in one call.
+      operationId: tennis_player_matches_players__player_id__matches_get
+      parameters:
+      - name: player_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Player Id
+      - name: year
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+      - name: surface
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Surface
+      - name: level
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+      - name: opponent_id
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Opponent Id
+      - name: date_start
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Date Start
+      - name: date_end
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Date End
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 20
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Player Matches Players  Player Id  Matches Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/tournaments/{tournament_id}/schedule:
+    get:
+      tags:
+      - Tennis
+      summary: Tournament Edition Schedule
+      description: Matches of one tournament edition in date/round order — order of play, results view.
+      operationId: tennis_tournament_schedule_tournaments__tournament_id__schedule_get
+      parameters:
+      - name: tournament_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Tournament Id
+      - name: round
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: 'Round code filter: F, SF, QF, R16…'
+          title: Round
+        description: 'Round code filter: F, SF, QF, R16…'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Tournament Schedule Tournaments  Tournament Id  Schedule Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/matches/{match_id}/stats:
+    get:
+      tags:
+      - Tennis
+      summary: Match Statistics Slice
+      description: Serving/return statistics for one match (subset of the full match detail).
+      operationId: tennis_match_stats_matches__match_id__stats_get
+      parameters:
+      - name: match_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Match Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Match Stats Matches  Match Id  Stats Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/competitions:
+    get:
+      tags:
+      - Tennis
+      summary: Competitions Index
+      description: 'Distinct competitions across editions (name + tour), with edition counts and year span.
+
+
+        A ''competition'' here is the recurring event (e.g. Wimbledon), whereas
+
+        /tournaments lists individual yearly editions.
+
+
+        Each item carries an `id`: the most recent real tournament_id sharing
+
+        that exact name+tour, so a caller (or the MCP''s resolve_entity, which
+
+        reads this route for tennis tournament search) always gets a usable,
+
+        chainable id -- never a bare name with nothing to look up next.'
+      operationId: tennis_list_competitions_competitions_get
+      parameters:
+      - name: tour
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: ATP or WTA
+          title: Tour
+        description: ATP or WTA
+      - name: q
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Name search
+          title: Q
+        description: Name search
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response List Competitions Competitions Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+  /tennis/rankings/{circuit}:
+    get:
+      tags:
+      - Tennis
+      summary: Rankings by Circuit (path form)
+      description: 'Circuit-style rankings path: /rankings/atp, /rankings/wta (singles).
+
+
+        Doubles and race standings are not in this dataset; those circuits return
+
+        a structured 404 saying so rather than an empty table.'
+      operationId: tennis_rankings_by_circuit_rankings__circuit__get
+      parameters:
+      - name: circuit
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Circuit
+      - name: date
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+            format: date
+          - type: 'null'
+          title: Date
+      - name: rank_min
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Rank Min
+      - name: rank_max
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 2000
+          minimum: 1
+          default: 100
+          title: Rank Max
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+          title: Page
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 500
+          minimum: 1
+          default: 50
+          title: Page Size
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+                title: Response Rankings By Circuit Rankings  Circuit  Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TennisHTTPValidationError'
+      security:
+      - ApiKeyAuth: []
+components:
+  schemas:
+    TennisGrandSlamBreakdown:
+      properties:
+        australian_open:
+          $ref: '#/components/schemas/TennisGrandSlamTournamentRecord'
+        roland_garros:
+          $ref: '#/components/schemas/TennisGrandSlamTournamentRecord'
+        wimbledon:
+          $ref: '#/components/schemas/TennisGrandSlamTournamentRecord'
+        us_open:
+          $ref: '#/components/schemas/TennisGrandSlamTournamentRecord'
+      type: object
+      required:
+      - australian_open
+      - roland_garros
+      - wimbledon
+      - us_open
+      title: GrandSlamBreakdown
+      description: Career performance across the four Grand Slam majors.
+    TennisTournamentDrawResponse:
+      properties:
+        tournament_id:
+          type: string
+          title: Tournament Id
+          description: Tournament ID
+        tournament_name:
+          type: string
+          title: Tournament Name
+          description: Tournament name
+        year:
+          type: integer
+          title: Year
+          description: Tournament edition year
+        draw_size:
+          type: integer
+          title: Draw Size
+          description: Draw size (e.g. 128, 64, 32)
+        surface:
+          type: string
+          title: Surface
+          description: Court surface
+        rounds:
+          items:
+            $ref: '#/components/schemas/TennisDrawRound'
+          type: array
+          title: Rounds
+          description: Bracket rounds sorted from Final backward or R1 forward
+        surface_badge:
+          anyOf:
+          - additionalProperties:
+              type: string
+            type: object
+          - type: 'null'
+          title: Surface Badge
+          description: 'UI badge convention for the surface: label plus hex color (presentation constant, not official tournament artwork; logo assets remain unavailable)'
+      type: object
+      required:
+      - tournament_id
+      - tournament_name
+      - year
+      - draw_size
+      - surface
+      title: TournamentDrawResponse
+      description: Full interactive draw bracket tree.
+    TennisSurfaceStatItem:
+      properties:
+        matches:
+          type: integer
+          title: Matches
+          description: Matches played on this surface
+        won:
+          type: integer
+          title: Won
+          description: Matches won on this surface
+        lost:
+          type: integer
+          title: Lost
+          description: Matches lost on this surface
+        win_pct:
+          type: number
+          title: Win Pct
+          description: Win percentage on this surface
+        titles:
+          type: integer
+          title: Titles
+          description: Titles won on this surface
+          default: 0
+      type: object
+      required:
+      - matches
+      - won
+      - lost
+      - win_pct
+      title: SurfaceStatItem
+      description: Statistics for a specific court surface.
+    TennisPaginatedResponse_TournamentListItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TennisTournamentListItem'
+          type: array
+          title: Items
+          description: List of items for current page
+        total:
+          type: integer
+          title: Total
+          description: Total count of items matching filter criteria
+        page:
+          type: integer
+          title: Page
+          description: Current page number (1-indexed)
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of items per page
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of available pages
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether there is a subsequent page
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether there is a preceding page
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      - total_pages
+      - has_next
+      - has_prev
+      title: PaginatedResponse[TournamentListItem]
+    TennisH2HPlayerSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Player ID
+        name:
+          type: string
+          title: Name
+          description: Player full name
+        ioc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ioc
+          description: Country IOC code
+        current_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Rank
+          description: Current rank
+        career_high_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Career High Rank
+          description: Peak career rank
+        wins:
+          type: integer
+          title: Wins
+          description: Total wins against opponent
+      type: object
+      required:
+      - id
+      - name
+      - wins
+      title: H2HPlayerSummary
+      description: Player summary for H2H rivalry comparison.
+    TennisCareerSummary:
+      properties:
+        matches_played:
+          type: integer
+          title: Matches Played
+          description: Total official matches played
+        matches_won:
+          type: integer
+          title: Matches Won
+          description: Total matches won
+        matches_lost:
+          type: integer
+          title: Matches Lost
+          description: Total matches lost
+        win_percentage:
+          type: number
+          title: Win Percentage
+          description: Career win percentage (0.0 to 100.0)
+        titles_count:
+          type: integer
+          title: Titles Count
+          description: Singles titles won
+        grand_slam_titles:
+          type: integer
+          title: Grand Slam Titles
+          description: Grand Slam singles titles won
+          default: 0
+        masters_titles:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Masters Titles
+          description: Masters 1000 singles titles where computed; null when not
+        finals_reached:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Finals Reached
+          description: Singles finals reached where computed; null when not
+        prize_money_usd:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Prize Money Usd
+          description: Not held by this dataset; always null
+      type: object
+      required:
+      - matches_played
+      - matches_won
+      - matches_lost
+      - win_percentage
+      - titles_count
+      title: CareerSummary
+      description: Aggregated career singles win-loss and title statistics.
+    TennisPlayerRankingHistoryResponse:
+      properties:
+        player_id:
+          type: string
+          title: Player Id
+          description: Player ID
+        player_name:
+          type: string
+          title: Player Name
+          description: Player full name
+        tour:
+          type: string
+          title: Tour
+          description: ATP or WTA
+        career_high_rank:
+          type: integer
+          title: Career High Rank
+          description: Peak career ranking position
+        career_high_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Career High Date
+          description: Date peak ranking was attained
+        total_weeks_at_no_1:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Weeks At No 1
+          description: Weeks ranked at world No. 1
+          default: 0
+        history:
+          items:
+            $ref: '#/components/schemas/TennisRankingHistoryPoint'
+          type: array
+          title: History
+          description: Chronological ranking list
+      type: object
+      required:
+      - player_id
+      - player_name
+      - tour
+      - career_high_rank
+      title: PlayerRankingHistoryResponse
+      description: Career historical ranking time-series and peak records.
+    TennisTournamentListItem:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Tournament unique identifier
+        name:
+          type: string
+          title: Name
+          description: Canonical tournament name
+        tour:
+          type: string
+          title: Tour
+          description: ATP or WTA
+        level:
+          type: string
+          title: Level
+          description: Tournament tier (e.g. Grand Slam, Masters 1000)
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: 'Canonical event category: grand_slam, masters_1000, wta_1000, tour_finals, atp_tour, wta_tour, challenger, itf, davis_cup, billie_jean_king_cup, other. ATP 250 and ATP 500 both report atp_tour because the source does not separate them'
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+          description: Tournament tier name
+        surface:
+          type: string
+          title: Surface
+          description: 'Court surface: Hard, Clay, Grass, Carpet'
+        draw_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Draw Size
+          description: Draw size
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+          description: Edition year (every id is a per-year edition, e.g. atp_2026_540)
+        city:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: City
+          description: Host city
+        country_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Code
+          description: Host country 3-letter IOC code
+        first_edition_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: First Edition Year
+          description: First recorded year
+        most_recent_edition_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Most Recent Edition Year
+          description: Most recent year
+        all_time_title_leader:
+          anyOf:
+          - $ref: '#/components/schemas/TennisAllTimeTitleLeader'
+          - type: 'null'
+          description: Most successful champion
+      type: object
+      required:
+      - id
+      - name
+      - tour
+      - level
+      - surface
+      title: TournamentListItem
+      description: Summary item for tournament catalog.
+    TennisHeadToHeadMatrixResponse:
+      properties:
+        players:
+          items:
+            $ref: '#/components/schemas/TennisH2HPlayerSummary'
+          type: array
+          title: Players
+          description: List of compared players
+        matrix:
+          additionalProperties:
+            additionalProperties:
+              type: string
+            type: object
+          type: object
+          title: Matrix
+          description: H2H win-loss grid indexed by player ID pairs
+      type: object
+      required:
+      - players
+      - matrix
+      title: HeadToHeadMatrixResponse
+      description: Multi-player Head-to-Head comparison grid.
+    TennisListResponse_CalendarTournamentItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TennisCalendarTournamentItem'
+          type: array
+          title: Items
+          description: The rows
+        total:
+          type: integer
+          title: Total
+          description: Rows matching the filter, not rows in this response
+        page:
+          type: integer
+          title: Page
+          description: Current page; these routes return a single page
+          default: 1
+        page_size:
+          type: integer
+          title: Page Size
+          description: Rows requested for this page
+          default: 0
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total pages available
+          default: 1
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether a subsequent page exists
+          default: false
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether a preceding page exists
+          default: false
+      type: object
+      required:
+      - items
+      - total
+      title: ListResponse[CalendarTournamentItem]
+    TennisGrandSlamTournamentRecord:
+      properties:
+        titles:
+          type: integer
+          title: Titles
+          description: Titles won
+          default: 0
+        finals:
+          type: integer
+          title: Finals
+          description: Finals reached
+          default: 0
+        win_loss:
+          type: string
+          title: Win Loss
+          description: Career win-loss record string
+          default: 0-0
+        win_pct:
+          type: number
+          title: Win Pct
+          description: Match win percentage
+          default: 0
+      type: object
+      title: GrandSlamTournamentRecord
+      description: Performance metrics for an individual Grand Slam tournament.
+    TennisH2HSurfaceItem:
+      properties:
+        player1_wins:
+          type: integer
+          title: Player1 Wins
+          description: Wins by Player 1 on this surface
+          default: 0
+        player2_wins:
+          type: integer
+          title: Player2 Wins
+          description: Wins by Player 2 on this surface
+          default: 0
+        total:
+          type: integer
+          title: Total
+          description: Total matches on this surface
+          default: 0
+      type: object
+      title: H2HSurfaceItem
+      description: Surface-specific head-to-head record.
+    TennisHeadToHeadResponse:
+      properties:
+        player1:
+          $ref: '#/components/schemas/TennisH2HPlayerSummary'
+          description: Player 1 summary
+        player2:
+          $ref: '#/components/schemas/TennisH2HPlayerSummary'
+          description: Player 2 summary
+        summary:
+          $ref: '#/components/schemas/TennisH2HSummary'
+          description: Overall tally and key milestones
+        surface_breakdown:
+          $ref: '#/components/schemas/TennisH2HSurfaceBreakdown'
+          description: Surface breakdown
+        level_breakdown:
+          anyOf:
+          - $ref: '#/components/schemas/TennisH2HLevelBreakdown'
+          - type: 'null'
+          description: Tournament tier breakdown
+        format_breakdown:
+          anyOf:
+          - $ref: '#/components/schemas/TennisH2HFormatBreakdown'
+          - type: 'null'
+          description: Best-of-3 / Best-of-5 breakdown
+        tiebreak_record:
+          anyOf:
+          - $ref: '#/components/schemas/TennisH2HTiebreakRecord'
+          - type: 'null'
+          description: Tiebreak record
+        deciding_sets:
+          anyOf:
+          - $ref: '#/components/schemas/TennisH2HDecidingSetsRecord'
+          - type: 'null'
+          description: Deciding sets record
+        matches:
+          items:
+            $ref: '#/components/schemas/TennisH2HMatchSummary'
+          type: array
+          title: Matches
+          description: Chronological match list
+      type: object
+      required:
+      - player1
+      - player2
+      - summary
+      - surface_breakdown
+      title: HeadToHeadResponse
+      description: Complete Head-to-Head rivalry dossier.
+    TennisPlayerListItem:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique player identifier
+        tour:
+          type: string
+          title: Tour
+          description: 'Tour federation: ATP or WTA'
+        first_name:
+          type: string
+          title: First Name
+          description: Player given name
+        last_name:
+          type: string
+          title: Last Name
+          description: Player surname
+        full_name:
+          type: string
+          title: Full Name
+          description: Full canonical display name
+        ioc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ioc
+          description: 3-letter IOC country code
+        country_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Code
+          description: Same 3-letter code as ioc, under the key most client integrations read
+        portrait_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait Url
+          description: Player portrait image URL, hosted by Cito; null when we hold no photo
+        portrait_attribution:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait Attribution
+          description: Who to credit for the portrait; display it with the image
+        portrait_license:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait License
+          description: Licence the portrait is published under, as stated by its source
+        portrait_source_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait Source Url
+          description: Page the portrait came from, for attribution and licence checks
+        country_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Name
+          description: Country name derived from the IOC/ISO code; null when the code is unmapped
+        nationality:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nationality
+          description: Same value as country_name, under the key most client integrations read
+        hand:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hand
+          description: 'Playing hand: R, L, A, U'
+          default: U
+        backhand:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Backhand
+          description: Backhand style (1H/2H) where known; not held for most players
+        dob:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dob
+          description: Date of birth in YYYY-MM-DD format
+        height_cm:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height Cm
+          description: Height in centimeters
+        weight_kg:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Weight Kg
+          description: Weight in kilograms
+        turned_pro:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Turned Pro
+          description: Year turned professional
+        career_high_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Career High Rank
+          description: Peak career ranking
+        career_high_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Career High Date
+          description: Date peak ranking was attained
+        current_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Rank
+          description: Current rolling ranking
+        titles_count:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Titles Count
+          description: Total singles titles; computed on the profile route, null on the list
+        grand_slam_titles:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Grand Slam Titles
+          description: Grand Slam singles titles; computed on the profile route, null on the list
+        is_active:
+          type: boolean
+          title: Is Active
+          description: Whether player is currently active
+          default: true
+      type: object
+      required:
+      - id
+      - tour
+      - first_name
+      - last_name
+      - full_name
+      title: PlayerListItem
+      description: Summary item for player listing and filtering.
+    TennisClutchStats:
+      properties:
+        tiebreaks_played:
+          type: integer
+          title: Tiebreaks Played
+          description: Total tiebreaks played
+          default: 0
+        tiebreaks_won:
+          type: integer
+          title: Tiebreaks Won
+          description: Total tiebreaks won
+          default: 0
+        tiebreak_win_pct:
+          type: number
+          title: Tiebreak Win Pct
+          description: Tiebreak win percentage
+          default: 0
+        deciding_set_matches:
+          type: integer
+          title: Deciding Set Matches
+          description: Matches that went to a deciding set
+          default: 0
+        deciding_set_wins:
+          type: integer
+          title: Deciding Set Wins
+          description: Deciding set matches won
+          default: 0
+        deciding_set_win_pct:
+          type: number
+          title: Deciding Set Win Pct
+          description: Deciding set win percentage
+          default: 0
+        after_winning_first_set_win_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: After Winning First Set Win Pct
+          description: Win % after winning 1st set
+        after_losing_first_set_win_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: After Losing First Set Win Pct
+          description: Win % after losing 1st set
+        vs_top_10_matches:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Vs Top 10 Matches
+          description: Matches played against Top 10 ranked players
+          default: 0
+        vs_top_10_wins:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Vs Top 10 Wins
+          description: Matches won against Top 10 ranked players
+          default: 0
+        vs_top_10_win_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Vs Top 10 Win Pct
+          description: Win % against Top 10 ranked players
+          default: 0
+      type: object
+      title: ClutchStats
+      description: Clutch situational and tiebreak metrics.
+    TennisAllTimeTitleLeader:
+      properties:
+        player_id:
+          type: string
+          title: Player Id
+          description: Player ID
+        player_name:
+          type: string
+          title: Player Name
+          description: Player full name
+        titles:
+          type: integer
+          title: Titles
+          description: Titles count
+      type: object
+      required:
+      - player_id
+      - player_name
+      - titles
+      title: AllTimeTitleLeader
+      description: Player with most titles at a tournament.
+    TennisMatchStatsSummary:
+      properties:
+        winner:
+          $ref: '#/components/schemas/TennisPlayerMatchStats'
+        loser:
+          $ref: '#/components/schemas/TennisPlayerMatchStats'
+      type: object
+      required:
+      - winner
+      - loser
+      title: MatchStatsSummary
+      description: Combined match statistics for winner and loser.
+    TennisH2HLevelBreakdown:
+      properties:
+        grand_slam:
+          $ref: '#/components/schemas/TennisH2HLevelItem'
+        masters_1000:
+          $ref: '#/components/schemas/TennisH2HLevelItem'
+        tour_finals:
+          $ref: '#/components/schemas/TennisH2HLevelItem'
+        atp_500_250:
+          $ref: '#/components/schemas/TennisH2HLevelItem'
+        olympics_davis_cup:
+          $ref: '#/components/schemas/TennisH2HLevelItem'
+      type: object
+      title: H2HLevelBreakdown
+      description: Head-to-head breakdown by tournament tier.
+    TennisH2HLevelItem:
+      properties:
+        player1_wins:
+          type: integer
+          title: Player1 Wins
+          description: Wins by Player 1 at this level
+          default: 0
+        player2_wins:
+          type: integer
+          title: Player2 Wins
+          description: Wins by Player 2 at this level
+          default: 0
+        total:
+          type: integer
+          title: Total
+          description: Total matches at this level
+          default: 0
+      type: object
+      title: H2HLevelItem
+      description: Level-specific head-to-head record.
+    TennisH2HDecidingSetsRecord:
+      properties:
+        player1_deciding_set_wins:
+          type: integer
+          title: Player1 Deciding Set Wins
+          description: Deciding set matches won by Player 1
+          default: 0
+        player2_deciding_set_wins:
+          type: integer
+          title: Player2 Deciding Set Wins
+          description: Deciding set matches won by Player 2
+          default: 0
+        total_deciding_sets:
+          type: integer
+          title: Total Deciding Sets
+          description: Total deciding set matches played
+          default: 0
+      type: object
+      title: H2HDecidingSetsRecord
+      description: Head-to-head deciding sets tally.
+    TennisTournamentDetailResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Tournament ID
+        name:
+          type: string
+          title: Name
+          description: Tournament name
+        tour:
+          type: string
+          title: Tour
+          description: Tour
+        level:
+          type: string
+          title: Level
+          description: Level tier
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: 'Canonical event category: grand_slam, masters_1000, wta_1000, tour_finals, atp_tour, wta_tour, challenger, itf, davis_cup, billie_jean_king_cup, other. ATP 250 and ATP 500 both report atp_tour because the source does not separate them'
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+          description: Tier name
+        surface:
+          type: string
+          title: Surface
+          description: Surface
+        draw_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Draw Size
+          description: Draw size
+          default: 32
+        city:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: City
+          description: City
+        country_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Code
+          description: Country code
+        first_edition_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: First Edition Year
+          description: First recorded edition of this event
+        most_recent_edition_year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Most Recent Edition Year
+          description: Most recent recorded edition
+        all_time_title_leader:
+          anyOf:
+          - $ref: '#/components/schemas/TennisAllTimeTitleLeader'
+          - type: 'null'
+          description: Most finals won across every edition; ties broken by most recent
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+          description: Edition year, the same field the list, draw and embedded forms of this tournament carry
+        is_live_shell:
+          type: boolean
+          title: Is Live Shell
+          description: True for a live-feed container (s365_*) holding archived live results, with default tier/surface and no geography
+          default: false
+      type: object
+      required:
+      - id
+      - name
+      - tour
+      - level
+      - surface
+      title: TournamentDetailResponse
+      description: Comprehensive tournament dossier and historical editions.
+    TennisRankingHistoryPoint:
+      properties:
+        date:
+          type: string
+          title: Date
+          description: Ranking publication date (YYYY-MM-DD)
+        rank:
+          type: integer
+          title: Rank
+          description: Rank on this date
+        points:
+          type: number
+          title: Points
+          description: Points on this date
+      type: object
+      required:
+      - date
+      - rank
+      - points
+      title: RankingHistoryPoint
+      description: Single time-series ranking data point for a player.
+    TennisServingStats:
+      properties:
+        total_aces:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Aces
+          description: Career total aces
+        total_double_faults:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Double Faults
+          description: Career total double faults
+        aces_per_match:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Aces Per Match
+          description: Average aces per match
+        first_serve_in_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: First Serve In Pct
+          description: First serve in percentage
+        first_serve_points_won_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: First Serve Points Won Pct
+          description: First serve points won %
+        second_serve_points_won_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Second Serve Points Won Pct
+          description: Second serve points won %
+        service_games_played:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Service Games Played
+          description: Total service games played
+        service_games_won_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Service Games Won Pct
+          description: Percentage of service games held
+        break_points_faced:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Break Points Faced
+          description: Total break points faced
+        break_points_saved_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Break Points Saved Pct
+          description: Percentage of break points saved
+      type: object
+      title: ServingStats
+      description: Detailed serving metrics and percentages.
+    TennisPlayerMatchStats:
+      properties:
+        aces:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Aces
+          description: Aces served
+        double_faults:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Double Faults
+          description: Double faults committed
+        serve_points:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Serve Points
+          description: Total service points played
+        first_serves_in:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: First Serves In
+          description: First serves in
+        first_serves_won:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: First Serves Won
+          description: First serve points won
+        second_serves_won:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Second Serves Won
+          description: Second serve points won
+        first_serve_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: First Serve Pct
+          description: 1st serve in %
+        first_serve_win_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: First Serve Win Pct
+          description: 1st serve points won %
+        second_serve_win_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Second Serve Win Pct
+          description: 2nd serve points won %
+        service_games_played:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Service Games Played
+          description: Service games played
+        break_points_saved:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Break Points Saved
+          description: Break points saved
+        break_points_faced:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Break Points Faced
+          description: Break points faced
+        break_points_converted:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Break Points Converted
+          description: Break points converted
+        break_point_opportunities:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Break Point Opportunities
+          description: Break point chances
+        total_points_won:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Total Points Won
+          description: Total points won
+      type: object
+      title: PlayerMatchStats
+      description: Granular match statistics for a single player.
+    TennisMatchParticipant:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: Player ID (null when unresolved, e.g. an unlinked doubles pair)
+        name:
+          type: string
+          title: Name
+          description: Player full name
+        ioc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ioc
+          description: Country IOC code
+        seed:
+          anyOf:
+          - type: string
+          - type: integer
+          - type: 'null'
+          title: Seed
+          description: Tournament seed
+        entry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entry
+          description: Entry code (e.g. Q, WC, LL, PR)
+        rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rank
+          description: Official rank at time of match
+        is_winner:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Winner
+          description: Winner indicator
+      type: object
+      required:
+      - name
+      title: MatchParticipant
+      description: 'Player participant summary in a match.
+
+
+        ``id`` is optional so this model also covers doubles pairs and live rows,
+
+        where the feed has not resolved an individual player id (e.g. a combined
+
+        pair name like "Bolelli S./Vavassori A." with no per-partner id).'
+    TennisPlayerProfile:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique player identifier
+        tour:
+          type: string
+          title: Tour
+          description: 'Tour federation: ATP or WTA'
+        first_name:
+          type: string
+          title: First Name
+          description: Given name
+        last_name:
+          type: string
+          title: Last Name
+          description: Surname
+        full_name:
+          type: string
+          title: Full Name
+          description: Canonical display name
+        ioc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ioc
+          description: 3-letter country code
+        country_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Code
+          description: Same 3-letter code as ioc, under the key most client integrations read
+        portrait_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait Url
+          description: Player portrait image URL, hosted by Cito; null when we hold no photo
+        portrait_attribution:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait Attribution
+          description: Who to credit for the portrait; display it with the image
+        portrait_license:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait License
+          description: Licence the portrait is published under, as stated by its source
+        portrait_source_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Portrait Source Url
+          description: Page the portrait came from, for attribution and licence checks
+        country_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Name
+          description: Country name derived from the IOC/ISO code; null when the code is unmapped
+        nationality:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nationality
+          description: Same value as country_name, under the key most client integrations read
+        hand:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Hand
+          description: Playing hand
+          default: U
+        backhand:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Backhand
+          description: Backhand style (1H/2H) where known; not held for most players
+        dob:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Dob
+          description: Date of birth
+        age:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Age
+          description: Current age in years
+        height_cm:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Height Cm
+          description: Height in cm
+        weight_kg:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Weight Kg
+          description: Weight in kg
+        turned_pro:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Turned Pro
+          description: Year turned pro
+        career_high_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Career High Rank
+          description: Career peak ranking
+        career_high_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Career High Date
+          description: Date peak ranking was attained
+        weeks_at_no_1:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Weeks At No 1
+          description: Total weeks ranked at world No. 1
+          default: 0
+        current_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Rank
+          description: Current ranking
+        current_rank_points:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Current Rank Points
+          description: Current ranking points
+        career_summary:
+          $ref: '#/components/schemas/TennisCareerSummary'
+          description: Overall career summary record
+        surface_breakdown:
+          anyOf:
+          - $ref: '#/components/schemas/TennisSurfaceBreakdown'
+          - type: 'null'
+          description: Surface win-loss splits
+        is_active:
+          type: boolean
+          title: Is Active
+          description: Active status
+          default: true
+      type: object
+      required:
+      - id
+      - tour
+      - first_name
+      - last_name
+      - full_name
+      - career_summary
+      title: PlayerProfile
+      description: Comprehensive player profile and biographical record.
+    TennisMatchListItem:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique match identifier
+        tournament_id:
+          type: string
+          title: Tournament Id
+          description: Tournament identifier
+        tournament_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tournament Name
+          description: Tournament name
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+          description: Tournament year
+        match_date:
+          type: string
+          title: Match Date
+          description: Date of match (YYYY-MM-DD)
+        tour:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+          description: 'Tour: ATP or WTA'
+          default: ATP
+        surface:
+          type: string
+          title: Surface
+          description: 'Court surface: Hard, Clay, Grass, Carpet'
+        level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+          description: Tournament level tier code
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: 'Canonical event category: grand_slam, masters_1000, wta_1000, tour_finals, atp_tour, wta_tour, challenger, itf, davis_cup, billie_jean_king_cup, other. ATP 250 and ATP 500 both report atp_tour because the source does not separate them'
+        round:
+          type: string
+          title: Round
+          description: 'Round code: F, SF, QF, R16, R32, R64, R128, RR'
+        round_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Round Name
+          description: Human-readable round name
+        best_of:
+          type: integer
+          title: Best Of
+          description: Best of 3 or 5 sets
+          default: 3
+        score:
+          type: string
+          title: Score
+          description: Official scoreline string
+        outcome:
+          type: string
+          title: Outcome
+          description: 'Outcome: COMPLETED, RETIREMENT, WALKOVER, DEFAULT'
+          default: COMPLETED
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+          description: 'Canonical status (same vocabulary as the live feed: COMPLETED, RETIREMENT, ...)'
+        duration_minutes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Minutes
+          description: Match duration in minutes
+        winner_id:
+          type: string
+          title: Winner Id
+          description: Winning player identifier
+        loser_id:
+          type: string
+          title: Loser Id
+          description: Losing player identifier
+        winner:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Winning player summary
+        loser:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Losing player summary
+        player1:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Canonical player1 (mapped from winner)
+        player2:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Canonical player2 (mapped from loser)
+        sets:
+          items:
+            $ref: '#/components/schemas/TennisMatchSetItem'
+          type: array
+          title: Sets
+          description: 'Set-by-set box score (TENNIS-25: always present on list routes; empty until sets are played)'
+      type: object
+      required:
+      - id
+      - tournament_id
+      - match_date
+      - surface
+      - round
+      - score
+      - winner_id
+      - loser_id
+      title: MatchListItem
+      description: Summary item for match directory listing.
+    TennisPlayerBatchResponse:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TennisPlayerListItem'
+          type: array
+          title: Items
+          description: Players, in the order the ids were given
+        total:
+          type: integer
+          title: Total
+          description: Number of players returned
+        missing:
+          items:
+            type: string
+          type: array
+          title: Missing
+          description: Requested ids that do not exist
+      type: object
+      required:
+      - items
+      - total
+      title: PlayerBatchResponse
+      description: Many players in one call. `missing` names the ids that did not resolve.
+    TennisSurfaceBreakdown:
+      properties:
+        hard:
+          $ref: '#/components/schemas/TennisSurfaceStatItem'
+        clay:
+          $ref: '#/components/schemas/TennisSurfaceStatItem'
+        grass:
+          $ref: '#/components/schemas/TennisSurfaceStatItem'
+        carpet:
+          $ref: '#/components/schemas/TennisSurfaceStatItem'
+      type: object
+      required:
+      - hard
+      - clay
+      - grass
+      - carpet
+      title: SurfaceBreakdown
+      description: Breakdown of matches and records across surface types.
+    TennisDrawPlayer:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: Player ID
+        name:
+          type: string
+          title: Name
+          description: Player display name
+        ioc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ioc
+          description: Country IOC code, the same key the match and h2h participant objects use
+        seed:
+          anyOf:
+          - type: string
+          - type: integer
+          - type: 'null'
+          title: Seed
+          description: Seeding number
+        entry:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Entry
+          description: Entry type (WC, Q, LL)
+        is_winner:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Winner
+          description: Whether player advanced from this match
+      type: object
+      required:
+      - name
+      title: DrawPlayer
+      description: Player participant node in bracket draw.
+    TennisHTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/TennisValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    TennisMatchDetailResponse:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Unique match identifier
+        tournament_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tournament Id
+          description: Tournament ID
+        tournament:
+          anyOf:
+          - $ref: '#/components/schemas/TennisTournamentSummaryInfo'
+          - type: 'null'
+          description: Tournament metadata
+        match_date:
+          type: string
+          title: Match Date
+          description: Match date (YYYY-MM-DD)
+        tour:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+          description: 'Tour: ATP or WTA'
+          default: ATP
+        surface:
+          type: string
+          title: Surface
+          description: Surface
+        round:
+          type: string
+          title: Round
+          description: Round code
+        best_of:
+          type: integer
+          title: Best Of
+          description: Best of 3 or 5 sets
+          default: 3
+        score:
+          type: string
+          title: Score
+          description: Official score string (or the live scoreline while in progress)
+        outcome:
+          type: string
+          title: Outcome
+          description: Match outcome
+          default: COMPLETED
+        status:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Status
+          description: 'Canonical status: SCHEDULED, IN_PROGRESS, COMPLETED, RETIREMENT, ...'
+        duration_minutes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Duration Minutes
+          description: Duration in minutes
+        winner_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Winner Id
+          description: Winner ID (null while the match is in progress)
+        loser_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Loser Id
+          description: Loser ID (null while the match is in progress)
+        winner_sets_won:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Winner Sets Won
+          description: Sets won by the winner; null while the match is in progress, when there is no winner yet -- read sets[] for the running count
+        loser_sets_won:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Loser Sets Won
+          description: Sets won by the loser; null while the match is in progress, when there is no loser yet -- read sets[] for the running count
+        scheduled_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Scheduled At
+          description: Full scheduled/kickoff timestamp (ISO 8601), when the source provides one
+        tournament_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tournament Name
+          description: Tournament name as free text; populated even when `tournament`/`tournament_id` are not yet linked (e.g. a live match not yet reconciled to a tournament id)
+        round_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Round Name
+          description: Human-readable round name, the same label the list routes return
+        winner:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Winner details (null while in progress)
+        loser:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Loser details (null while in progress)
+        player1:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Canonical player1 (the winner once decided; always populated for a resolved match)
+        player2:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchParticipant'
+          - type: 'null'
+          description: Canonical player2 (the loser once decided; always populated for a resolved match)
+        winner_side:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Winner Side
+          description: 'Which side won: 1 (player1), 2 (player2), or null while in progress / unknown'
+        sets:
+          items:
+            $ref: '#/components/schemas/TennisMatchSetItem'
+          type: array
+          title: Sets
+          description: Set-by-set box score
+        stats:
+          anyOf:
+          - $ref: '#/components/schemas/TennisMatchStatsSummary'
+          - type: 'null'
+          description: Match serving and return statistics
+      type: object
+      required:
+      - id
+      - match_date
+      - surface
+      - round
+      - score
+      title: MatchDetailResponse
+      description: 'Comprehensive match detail response including set scores and stats.
+
+
+        Serves both archived (completed) matches and matches still on the live
+
+        board: the canonical ``id``/``player1``/``player2``/``status``/``sets``
+
+        vocabulary is shared by both, so a customer can write one Match type
+
+        against ``/matches/{id}`` whatever state the match is in. ``winner_id``/
+
+        ``loser_id``/``winner``/``loser`` are null while a match is still in
+
+        progress (there is no winner yet); ``player1``/``player2`` are always
+
+        populated.'
+    TennisH2HSummary:
+      properties:
+        total_matches:
+          type: integer
+          title: Total Matches
+          description: Total encounters between the two players
+        player1_wins:
+          type: integer
+          title: Player1 Wins
+          description: Encounters won by Player 1
+        player2_wins:
+          type: integer
+          title: Player2 Wins
+          description: Encounters won by Player 2
+        player1_lead:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player1 Lead
+          description: Net lead in wins by Player 1 (can be negative)
+        finals_matches:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Finals Matches
+          description: Encounters in finals
+          default: 0
+        player1_finals_wins:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player1 Finals Wins
+          description: Finals won by Player 1
+          default: 0
+        player2_finals_wins:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player2 Finals Wins
+          description: Finals won by Player 2
+          default: 0
+        grand_slam_matches:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Grand Slam Matches
+          description: Encounters at Grand Slams
+          default: 0
+        player1_grand_slam_wins:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player1 Grand Slam Wins
+          description: Grand Slam matches won by Player 1
+          default: 0
+        player2_grand_slam_wins:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player2 Grand Slam Wins
+          description: Grand Slam matches won by Player 2
+          default: 0
+      type: object
+      required:
+      - total_matches
+      - player1_wins
+      - player2_wins
+      title: H2HSummary
+      description: Head-to-head overall tallies.
+    TennisReturnStats:
+      properties:
+        first_return_points_won_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: First Return Points Won Pct
+          description: 1st return points won %
+        second_return_points_won_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Second Return Points Won Pct
+          description: 2nd return points won %
+        return_games_won_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Return Games Won Pct
+          description: Return games won (break %) %
+        break_point_opportunities:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Break Point Opportunities
+          description: Total break point opportunities
+        break_points_converted_pct:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Break Points Converted Pct
+          description: Break points converted %
+      type: object
+      title: ReturnStats
+      description: Detailed return metrics and percentages.
+    TennisLivePlayerState:
+      properties:
+        id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Id
+          description: Player ID
+        name:
+          type: string
+          title: Name
+          description: Player display name
+        ioc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ioc
+          description: Country IOC code, the same key the match and h2h participant objects use
+        seed:
+          anyOf:
+          - type: string
+          - type: integer
+          - type: 'null'
+          title: Seed
+          description: Tournament seed
+        sets_won:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sets Won
+          description: Completed sets won in this match
+          default: 0
+        current_game_score:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Current Game Score
+          description: Current point score (0, 15, 30, 40, AD)
+          default: '0'
+        is_serving:
+          type: boolean
+          title: Is Serving
+          description: Whether this player is currently serving
+          default: false
+      type: object
+      required:
+      - name
+      title: LivePlayerState
+      description: Player status in an active live match.
+    TennisH2HTiebreakRecord:
+      properties:
+        player1_tiebreaks_won:
+          type: integer
+          title: Player1 Tiebreaks Won
+          description: Tiebreaks won by Player 1
+          default: 0
+        player2_tiebreaks_won:
+          type: integer
+          title: Player2 Tiebreaks Won
+          description: Tiebreaks won by Player 2
+          default: 0
+        total_tiebreaks:
+          type: integer
+          title: Total Tiebreaks
+          description: Total tiebreaks played between the two
+          default: 0
+      type: object
+      title: H2HTiebreakRecord
+      description: Head-to-head tiebreak tally.
+    TennisLiveSetScore:
+      properties:
+        set_num:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Set Num
+          description: Set number
+        set_number:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Set Number
+          description: Canonical set number (same value as set_num)
+        score:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Score
+          description: Set score string
+        player1_games:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player1 Games
+          description: Games won by Player 1
+        player2_games:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player2 Games
+          description: Games won by Player 2
+        tiebreak:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tiebreak
+          description: Tiebreak score if applicable
+        is_completed:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Completed
+          description: Whether this set is concluded
+      type: object
+      title: LiveSetScore
+      description: 'Set score item in live match.
+
+
+        ``set_number`` is the canonical field name (shared with the match
+
+        archive, which otherwise calls this ``winner_games``/``loser_games``''s
+
+        counterpart ``set_number``); ``set_num`` stays for back-compat.'
+    TennisDrawRound:
+      properties:
+        round_code:
+          type: string
+          title: Round Code
+          description: Round code (e.g. F, SF, QF, R16, R32, R64, R128)
+        round_name:
+          type: string
+          title: Round Name
+          description: Human-readable round name
+        matches:
+          items:
+            $ref: '#/components/schemas/TennisDrawMatch'
+          type: array
+          title: Matches
+          description: Matches in this round
+      type: object
+      required:
+      - round_code
+      - round_name
+      title: DrawRound
+      description: Round grouping in bracket tree.
+    TennisCalendarTournamentItem:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Tournament edition ID
+        name:
+          type: string
+          title: Name
+          description: Tournament name
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+          description: Edition year; this route requires year as a query parameter and did not return it
+        tour:
+          type: string
+          title: Tour
+          description: ATP or WTA
+        level:
+          type: string
+          title: Level
+          description: Tier code
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: 'Canonical event category: grand_slam, masters_1000, wta_1000, tour_finals, atp_tour, wta_tour, challenger, itf, davis_cup, billie_jean_king_cup, other. ATP 250 and ATP 500 both report atp_tour because the source does not separate them'
+        tier:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tier
+          description: Tier name
+        surface:
+          type: string
+          title: Surface
+          description: Surface
+        start_date:
+          type: string
+          title: Start Date
+          description: Start date (YYYY-MM-DD)
+        end_date:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: End Date
+          description: End date (YYYY-MM-DD)
+        draw_size:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Draw Size
+          description: Draw size
+          default: 32
+        city:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: City
+          description: Host city
+        country_code:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Code
+          description: Country code
+        is_live_shell:
+          type: boolean
+          title: Is Live Shell
+          description: True for a live-feed container (s365_*) or a tour_year_code alias resolving to one; the archive has not caught up to this edition yet
+          default: false
+      type: object
+      required:
+      - id
+      - name
+      - tour
+      - level
+      - surface
+      - start_date
+      title: CalendarTournamentItem
+      description: Tournament calendar event item.
+    TennisListResponse_PlayerListItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TennisPlayerListItem'
+          type: array
+          title: Items
+          description: The rows
+        total:
+          type: integer
+          title: Total
+          description: Rows matching the filter, not rows in this response
+        page:
+          type: integer
+          title: Page
+          description: Current page; these routes return a single page
+          default: 1
+        page_size:
+          type: integer
+          title: Page Size
+          description: Rows requested for this page
+          default: 0
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total pages available
+          default: 1
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether a subsequent page exists
+          default: false
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether a preceding page exists
+          default: false
+      type: object
+      required:
+      - items
+      - total
+      title: ListResponse[PlayerListItem]
+    TennisMatchSetItem:
+      properties:
+        set_number:
+          type: integer
+          title: Set Number
+          description: Set number (1, 2, 3, 4, 5)
+        winner_games:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Winner Games
+          description: Games won by match winner, once decided
+        loser_games:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Loser Games
+          description: Games won by match loser, once decided
+        player1_games:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player1 Games
+          description: Games won by player1 (canonical, always populated)
+        player2_games:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Player2 Games
+          description: Games won by player2 (canonical, always populated)
+        tiebreak:
+          anyOf:
+          - $ref: '#/components/schemas/TennisTiebreakDetail'
+          - type: 'null'
+          description: Tiebreak points if set reached tiebreak
+      type: object
+      required:
+      - set_number
+      title: MatchSetItem
+      description: 'Set-by-set box score item.
+
+
+        ``set_number`` is the canonical field name shared with the live feed
+
+        (which otherwise calls this ``set_num``). ``player1_games``/``player2_games``
+
+        are the canonical per-side fields, always populated; ``winner_games``/
+
+        ``loser_games`` stay for back-compat and are populated once a winner is
+
+        known (null while the match this set belongs to is still in progress).'
+    TennisTournamentSummaryInfo:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Tournament ID
+        name:
+          type: string
+          title: Name
+          description: Tournament name
+        year:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Year
+          description: Tournament year
+        surface:
+          type: string
+          title: Surface
+          description: Surface
+        level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+          description: Tier code
+        category:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Category
+          description: 'Canonical event category: grand_slam, masters_1000, wta_1000, tour_finals, atp_tour, wta_tour, challenger, itf, davis_cup, billie_jean_king_cup, other. ATP 250 and ATP 500 both report atp_tour because the source does not separate them'
+        city:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: City
+          description: Host city
+        country:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country
+          description: Host country code
+      type: object
+      required:
+      - id
+      - name
+      - surface
+      title: TournamentSummaryInfo
+      description: Tournament context metadata embedded in match detail.
+    TennisListResponse_str_:
+      properties:
+        items:
+          items:
+            type: string
+          type: array
+          title: Items
+          description: The rows
+        total:
+          type: integer
+          title: Total
+          description: Rows matching the filter, not rows in this response
+        page:
+          type: integer
+          title: Page
+          description: Current page; these routes return a single page
+          default: 1
+        page_size:
+          type: integer
+          title: Page Size
+          description: Rows requested for this page
+          default: 0
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total pages available
+          default: 1
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether a subsequent page exists
+          default: false
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether a preceding page exists
+          default: false
+      type: object
+      required:
+      - items
+      - total
+      title: ListResponse[str]
+    TennisLiveMatchSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Canonical match identifier (same value as match_id)
+        match_id:
+          type: string
+          title: Match Id
+          description: Unique live match ID
+        started_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Started At
+          description: When the match went in-play (ISO 8601)
+        round_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Round Name
+          description: Human label for the round code
+        tour:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+          description: ATP or WTA
+        tournament_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tournament Id
+          description: Tournament id once this match is reconciled to a tournament; null while it is still on the live feed
+        tournament_name:
+          type: string
+          title: Tournament Name
+          description: Tournament name
+        court:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court
+          description: Court name
+        surface:
+          type: string
+          title: Surface
+          description: Court surface
+          default: Hard
+        round:
+          type: string
+          title: Round
+          description: Round code
+        best_of:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Best Of
+          description: Best of 3 or 5
+          default: 3
+        status:
+          type: string
+          title: Status
+          description: 'State: NOT_STARTED, IN_PROGRESS, FINISHED'
+          default: IN_PROGRESS
+        outcome:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Outcome
+          description: Decided-match outcome (COMPLETED, RETIREMENT, ...); null while in progress (TENNIS-25 canonical-shape parity)
+        player1:
+          $ref: '#/components/schemas/TennisLivePlayerState'
+          description: Player 1 live state
+        player2:
+          $ref: '#/components/schemas/TennisLivePlayerState'
+          description: Player 2 live state
+        winner:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Winner
+          description: Winning side once decided; null while in progress (TENNIS-25 canonical-shape parity)
+        loser:
+          anyOf:
+          - additionalProperties: true
+            type: object
+          - type: 'null'
+          title: Loser
+          description: Losing side once decided; null while in progress (TENNIS-25 canonical-shape parity)
+        winner_side:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Winner Side
+          description: 1 or 2 once decided; null while in progress
+        current_set:
+          type: integer
+          title: Current Set
+          description: Current active set number
+          default: 1
+        game_score:
+          type: string
+          title: Game Score
+          description: Current game point score
+          default: 0-0
+        server:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Server
+          description: 'Current server: 1 for Player 1, 2 for Player 2'
+          default: 1
+        sets:
+          items:
+            $ref: '#/components/schemas/TennisLiveSetScore'
+          type: array
+          title: Sets
+          description: Set-by-set scores
+        stats:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Stats
+          description: Per-side match statistics
+        source:
+          type: string
+          title: Source
+          description: Origin of this live record.
+          default: simulator
+      type: object
+      required:
+      - id
+      - match_id
+      - tournament_name
+      - round
+      - player1
+      - player2
+      title: LiveMatchSummary
+      description: Live match summary in active feed list.
+    TennisH2HFormatBreakdown:
+      properties:
+        best_of_3:
+          $ref: '#/components/schemas/TennisH2HLevelItem'
+        best_of_5:
+          $ref: '#/components/schemas/TennisH2HLevelItem'
+      type: object
+      title: H2HFormatBreakdown
+      description: Head-to-head breakdown by match length (best of 3 vs best of 5).
+    TennisH2HMatchSummary:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Match ID
+        date:
+          type: string
+          title: Date
+          description: Match date
+        tournament_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tournament Name
+          description: Tournament name
+        surface:
+          type: string
+          title: Surface
+          description: Surface
+        level:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Level
+          description: Tournament tier
+        round:
+          type: string
+          title: Round
+          description: Round code
+        winner_id:
+          type: string
+          title: Winner Id
+          description: Winning player ID
+        winner_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Winner Name
+          description: Winning player name
+        score:
+          type: string
+          title: Score
+          description: Scoreline
+      type: object
+      required:
+      - id
+      - date
+      - surface
+      - round
+      - winner_id
+      - score
+      title: H2HMatchSummary
+      description: Match summary in H2H chronology.
+    TennisPlayerStatsResponse:
+      properties:
+        player_id:
+          type: string
+          title: Player Id
+          description: Player identifier
+        player_name:
+          type: string
+          title: Player Name
+          description: Full canonical display name
+        filters:
+          additionalProperties:
+            anyOf:
+            - type: string
+            - type: integer
+            - type: 'null'
+          type: object
+          title: Filters
+          description: Active query filters
+        career_summary:
+          $ref: '#/components/schemas/TennisCareerSummary'
+          description: Career summary record
+        surface_breakdown:
+          $ref: '#/components/schemas/TennisSurfaceBreakdown'
+          description: Surface breakdown
+        serving_stats:
+          $ref: '#/components/schemas/TennisServingStats'
+          description: Serving metrics
+        return_stats:
+          anyOf:
+          - $ref: '#/components/schemas/TennisReturnStats'
+          - type: 'null'
+          description: Return metrics
+        clutch_and_situational:
+          anyOf:
+          - $ref: '#/components/schemas/TennisClutchStats'
+          - type: 'null'
+          description: Clutch metrics
+        grand_slam_breakdown:
+          anyOf:
+          - $ref: '#/components/schemas/TennisGrandSlamBreakdown'
+          - type: 'null'
+          description: Grand Slam breakdown
+      type: object
+      required:
+      - player_id
+      - player_name
+      - career_summary
+      - surface_breakdown
+      - serving_stats
+      title: PlayerStatsResponse
+      description: Detailed career statistics response with optional filtering.
+    TennisListResponse_LiveMatchSummary_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TennisLiveMatchSummary'
+          type: array
+          title: Items
+          description: The rows
+        total:
+          type: integer
+          title: Total
+          description: Rows matching the filter, not rows in this response
+        page:
+          type: integer
+          title: Page
+          description: Current page; these routes return a single page
+          default: 1
+        page_size:
+          type: integer
+          title: Page Size
+          description: Rows requested for this page
+          default: 0
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total pages available
+          default: 1
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether a subsequent page exists
+          default: false
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether a preceding page exists
+          default: false
+      type: object
+      required:
+      - items
+      - total
+      title: ListResponse[LiveMatchSummary]
+    TennisH2HSurfaceBreakdown:
+      properties:
+        hard:
+          $ref: '#/components/schemas/TennisH2HSurfaceItem'
+        clay:
+          $ref: '#/components/schemas/TennisH2HSurfaceItem'
+        grass:
+          $ref: '#/components/schemas/TennisH2HSurfaceItem'
+        carpet:
+          $ref: '#/components/schemas/TennisH2HSurfaceItem'
+      type: object
+      title: H2HSurfaceBreakdown
+      description: Head-to-head surface breakdown across Hard, Clay, Grass, Carpet.
+    TennisDrawMatch:
+      properties:
+        match_id:
+          type: string
+          title: Match Id
+          description: Match ID
+        match_num:
+          type: integer
+          title: Match Num
+          description: Match order number
+        player1:
+          $ref: '#/components/schemas/TennisDrawPlayer'
+          description: Top / First player in bracket slot
+        player2:
+          $ref: '#/components/schemas/TennisDrawPlayer'
+          description: Bottom / Second player in bracket slot
+        score:
+          type: string
+          title: Score
+          description: Scoreline
+        next_match_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Next Match Id
+          description: Target match ID in subsequent round
+      type: object
+      required:
+      - match_id
+      - match_num
+      - player1
+      - player2
+      - score
+      title: DrawMatch
+      description: Match node in tournament draw bracket.
+    TennisRankingItem:
+      properties:
+        rank:
+          type: integer
+          title: Rank
+          description: Official ranking position
+        player_id:
+          type: string
+          title: Player Id
+          description: Player unique identifier
+        player_name:
+          type: string
+          title: Player Name
+          description: Player canonical full name
+        ioc:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Ioc
+          description: Country IOC code
+        country_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Country Name
+          description: Full country name, the same value the player routes return under this key
+        nationality:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Nationality
+          description: Same value as country_name, under the key most client integrations read
+        points:
+          type: number
+          title: Points
+          description: Official ranking points
+        rank_movement:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Rank Movement
+          description: previous_rank - rank against the previous published list; positive is a climb; null when the player was not on it
+        previous_rank:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Previous Rank
+          description: Rank on the previous published list; null when the player was not on it
+        tournaments_played:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Tournaments Played
+          description: 52-week counting tournament count
+      type: object
+      required:
+      - rank
+      - player_id
+      - player_name
+      - points
+      title: RankingItem
+      description: Single ranking entry in weekly leaderboard.
+    TennisLiveMatchDetail:
+      properties:
+        id:
+          type: string
+          title: Id
+          description: Canonical match identifier (same value as match_id)
+        match_id:
+          type: string
+          title: Match Id
+          description: Unique live match ID
+        started_at:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Started At
+          description: When the match went in-play (ISO 8601)
+        round_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Round Name
+          description: Human label for the round code
+        tour:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tour
+          description: ATP or WTA
+        tournament_id:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tournament Id
+          description: Tournament id once this match is reconciled to a tournament; null while it is still on the live feed
+        tournament_name:
+          type: string
+          title: Tournament Name
+          description: Tournament name
+        court:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Court
+          description: Court name
+        best_of:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Best Of
+          description: Best of 3 or 5
+          default: 3
+        round:
+          type: string
+          title: Round
+          description: Round
+        surface:
+          type: string
+          title: Surface
+          description: Surface
+          default: Hard
+        status:
+          type: string
+          title: Status
+          description: Status
+          default: IN_PROGRESS
+        player1:
+          $ref: '#/components/schemas/TennisLivePlayerState'
+          description: Player 1 state
+        player2:
+          $ref: '#/components/schemas/TennisLivePlayerState'
+          description: Player 2 state
+        winner_side:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Winner Side
+          description: 1 or 2 once decided; null while in progress
+        current_set:
+          type: integer
+          title: Current Set
+          description: Current set number
+          default: 1
+        game_score:
+          type: string
+          title: Game Score
+          description: Current game point score
+          default: 0-0
+        server:
+          type: integer
+          title: Server
+          description: Current server index (1 or 2)
+          default: 1
+        tiebreak_score:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Tiebreak Score
+          description: Active tiebreak score
+        sets:
+          items:
+            $ref: '#/components/schemas/TennisLiveSetScore'
+          type: array
+          title: Sets
+          description: Set scores
+        point_history:
+          anyOf:
+          - items:
+              additionalProperties: true
+              type: object
+            type: array
+          - type: 'null'
+          title: Point History
+          description: Recent point timeline
+        stats:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Stats
+          description: Per-side match statistics
+      type: object
+      required:
+      - id
+      - match_id
+      - tournament_name
+      - round
+      - player1
+      - player2
+      title: LiveMatchDetail
+      description: Detailed live match state snapshot.
+    TennisPaginatedResponse_PlayerListItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TennisPlayerListItem'
+          type: array
+          title: Items
+          description: List of items for current page
+        total:
+          type: integer
+          title: Total
+          description: Total count of items matching filter criteria
+        page:
+          type: integer
+          title: Page
+          description: Current page number (1-indexed)
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of items per page
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of available pages
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether there is a subsequent page
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether there is a preceding page
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      - total_pages
+      - has_next
+      - has_prev
+      title: PaginatedResponse[PlayerListItem]
+    TennisValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+    TennisPaginatedResponse_MatchListItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TennisMatchListItem'
+          type: array
+          title: Items
+          description: List of items for current page
+        total:
+          type: integer
+          title: Total
+          description: Total count of items matching filter criteria
+        page:
+          type: integer
+          title: Page
+          description: Current page number (1-indexed)
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of items per page
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of available pages
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether there is a subsequent page
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether there is a preceding page
+      type: object
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      - total_pages
+      - has_next
+      - has_prev
+      title: PaginatedResponse[MatchListItem]
+    TennisTiebreakDetail:
+      properties:
+        winner_points:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Winner Points
+          description: Points scored by tiebreak winner
+        loser_points:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Loser Points
+          description: Points scored by tiebreak loser
+      type: object
+      title: TiebreakDetail
+      description: Tiebreak point breakdown.
+    TennisRankingsListResponse:
+      properties:
+        ranking_date:
+          type: string
+          title: Ranking Date
+          description: Publication date of rankings (YYYY-MM-DD)
+        tour:
+          type: string
+          title: Tour
+          description: ATP or WTA
+        items:
+          items:
+            $ref: '#/components/schemas/TennisRankingItem'
+          type: array
+          title: Items
+          description: List of ranked players
+        total:
+          type: integer
+          title: Total
+          description: Total players in this ranking week
+        page:
+          type: integer
+          title: Page
+          description: Current page
+        page_size:
+          type: integer
+          title: Page Size
+          description: Page size
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total pages
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Next page available
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Previous page available
+      type: object
+      required:
+      - ranking_date
+      - tour
+      - items
+      - total
+      - page
+      - page_size
+      - total_pages
+      - has_next
+      - has_prev
+      title: RankingsListResponse
+      description: Paginated ranking leaderboard for a given tour and week.
+    TennisListResponse_Dict_str__Any__:
+      properties:
+        items:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Items
+          description: The rows
+        total:
+          type: integer
+          title: Total
+          description: Rows matching the filter, not rows in this response
+        page:
+          type: integer
+          title: Page
+          description: Current page; these routes return a single page
+          default: 1
+        page_size:
+          type: integer
+          title: Page Size
+          description: Rows requested for this page
+          default: 0
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total pages available
+          default: 1
+        has_next:
+          type: boolean
+          title: Has Next
+          description: Whether a subsequent page exists
+          default: false
+        has_prev:
+          type: boolean
+          title: Has Prev
+          description: Whether a preceding page exists
+          default: false
+      type: object
+      required:
+      - items
+      - total
+      title: ListResponse[Dict[str, Any]]
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

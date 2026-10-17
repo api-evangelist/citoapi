@@ -91,16 +91,257 @@ apis:
   humanURL: https://citoapi.com/docs/api/cs2
   baseURL: https://api.citoapi.com/api/v1
   aid: citoapi:cito-ufc-api
-- aid: citoapi:cito-api-v1-api
-  name: Cito API V1 API
-  description: 'Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling,
-
-    BKFC).'
-  humanURL: https://api.citoapi.com/v1/openapi.json
+- aid: citoapi:citoapi-bkfc-api
+  name: Cito CS2 API BKFC API
+  description: >-
+    Bare Knuckle Fighting Championship: every event since 2018, full cards, results, round-by-round punch
+    statistics, fighters, official rankings and live cards.
+  humanURL: https://citoapi.com/docs/api/cs2
   baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - BKFC
   properties:
   - type: OpenAPI
-    url: openapi/_original/citoapi-v1-openapi.json
+    url: openapi/citoapi-bkfc-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-call-of-duty-api
+  name: Cito CS2 API Call of Duty API
+  description: >-
+    Call of Duty (CDL) matches, live scores, players, organizations, tournaments, standings, transfers,
+    and leaderboards.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - Call of Duty
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-call-of-duty-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-cs2-api
+  name: Cito CS2 API CS2 API
+  description: >-
+    Counter-Strike 2: live matches, results, maps, rounds, teams, players, events, rankings, stats and
+    skins.
+
+
+    **Beta.** CS2 is in beta. If anything looks wrong, email support@citoapi.com with the endpoint and
+    the id you called. Docs: https://citoapi.com/docs/api/cs2
+
+
+    **Response shape.** Every response is `{ success, data, meta }`. Lists put rows in `data` and counts
+    or paging in `meta`.
+
+
+    **Ids.** Matches, teams, players and events have ids like `cs2-match-2398421`, `cs2-team-7020`, `cs2-player-11893`,
+    `cs2-event-8038`. Teams, players and events also accept their slug (`vitality`, `zywoo`).
+
+
+    **Paging.** `limit` sets how many rows come back. Each endpoint lists its own maximum (100 on most).
+    Asking for more returns the maximum, not an error. Page with `offset` or `page` where the endpoint
+    lists them.
+
+
+    **Lists are compact.** List endpoints return summary rows. Fetch the single record (`/cs2/events/{eventIdOrSlug}`,
+    `/cs2/teams/{teamIdOrSlug}`) for the full structure.
+
+
+    **Images.** Logos, player photos, map images and event banners are served from `api.citoapi.com` and
+    do not change address. An image field is `null` when we have no image for that record yet. Treat `null`
+    as "no image" and show a placeholder.
+
+
+    **Missing data.** When a record exists but a section has no data yet, the response says so with `data_available:
+    false` and an `unavailable_reason`, rather than an error.
+
+
+    **Times** are ISO 8601 in UTC.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - CS2
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-cs2-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-dota-2-api
+  name: Cito CS2 API Dota 2 API
+  description: Dota 2 esports matches, teams, players, tournaments, player stats, and radar snapshots.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - Dota 2
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-dota-2-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-fortnite-api
+  name: Cito CS2 API Fortnite API
+  description: >-
+    Fortnite competitive matches, tournaments/events, live leaderboards, players, orgs, pro rankings,
+    transfers, and earnings leaderboards.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - Fortnite
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-fortnite-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-qr-code-api
+  name: Cito CS2 API QR Code API
+  description: Generate QR codes with optional logo overlay.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - QR Code
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-qr-code-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-raf-wrestling-api
+  name: Cito CS2 API RAF Wrestling API
+  description: >-
+    Real American Freestyle professional wrestling: events, cards, results with per-period scores and
+    takedowns, athletes, champions and live results.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - RAF Wrestling
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-raf-wrestling-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-tennis-api
+  name: Cito CS2 API Tennis API
+  description: The Tennis API from Cito CS2 API — 54 operation(s) for tennis.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - Tennis
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-tennis-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-ufc-api
+  name: Cito CS2 API UFC API
+  description: UFC rankings, fighters, fighter profile stats, events, fight cards, bouts, and results.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - UFC
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-ufc-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-match-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-player-profile-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-raf-bout-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-live-match-detail-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-tennis-tournament-detail-response-schema.json
+  - type: JSONSchema
+    url: json-schema/citoapi-bkfc-bout-schema.json
+- aid: citoapi:citoapi-utility-api
+  name: Cito CS2 API Utility API
+  description: Health and status endpoints.
+  humanURL: https://citoapi.com/docs/api/cs2
+  baseURL: https://api.citoapi.com/api/v1
+  tags:
+  - Utility
+  properties:
+  - type: OpenAPI
+    url: openapi/citoapi-utility-api-openapi.yml
   - type: JSONSchema
     url: json-schema/citoapi-tennis-match-detail-response-schema.json
   - type: JSONSchema

@@ -1,0 +1,28 @@
+{
+  "provider": "citoapi",
+  "sources": [
+    "_original/citoapi-v1-openapi.json"
+  ],
+  "outputs": [
+    "citoapi-bkfc-api-openapi.yml",
+    "citoapi-cs2-api-openapi.yml",
+    "citoapi-call-of-duty-api-openapi.yml",
+    "citoapi-dota-2-api-openapi.yml",
+    "citoapi-fortnite-api-openapi.yml",
+    "citoapi-qr-code-api-openapi.yml",
+    "citoapi-raf-wrestling-api-openapi.yml",
+    "citoapi-tennis-api-openapi.yml",
+    "citoapi-ufc-api-openapi.yml",
+    "citoapi-utility-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "citoapi-v1-openapi.json: upgraded openapi 3.0.3 -> OpenAPI 3.2.0",
+    "citoapi-v1-openapi.json: declared missing tag: Tennis",
+    "apis.yml register: written (+10 apis, 11 total)"
+  ],
+  "skipped": []
+}

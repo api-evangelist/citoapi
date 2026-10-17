@@ -1,0 +1,281 @@
+openapi: 3.2.0
+info:
+  title: Cito QR Code API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: QR Code
+  description: Generate QR codes with optional logo overlay.
+paths:
+  /qr/generate:
+    get:
+      summary: Generate QR code (simple)
+      description: Generate a QR code via query parameters. Returns a raw PNG, SVG, or base64 JSON. Use the POST endpoint for logo overlay.
+      operationId: generateQrGet
+      tags:
+      - QR Code
+      parameters:
+      - name: data
+        in: query
+        required: true
+        description: Text or URL to encode.
+        schema:
+          type: string
+          maxLength: 2048
+          example: https://citoapi.com
+      - name: size
+        in: query
+        description: Output size in pixels.
+        schema:
+          type: integer
+          default: 300
+          minimum: 100
+          maximum: 2000
+      - name: format
+        in: query
+        description: Output format.
+        schema:
+          type: string
+          enum:
+          - png
+          - svg
+          - base64
+          default: png
+      - name: fg
+        in: query
+        description: Foreground hex color.
+        schema:
+          type: string
+          default: '#000000'
+          example: '#000000'
+      - name: bg
+        in: query
+        description: Background hex color.
+        schema:
+          type: string
+          default: '#ffffff'
+          example: '#ffffff'
+      - name: margin
+        in: query
+        description: Quiet zone width (0–10).
+        schema:
+          type: integer
+          default: 4
+          minimum: 0
+          maximum: 10
+      - name: ec
+        in: query
+        description: Error correction level.
+        schema:
+          type: string
+          enum:
+          - L
+          - M
+          - Q
+          - H
+          default: M
+      responses:
+        '200':
+          description: QR code image (PNG binary or SVG string) or JSON with base64 image.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/svg+xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                        example: data:image/png;base64,...
+                      format:
+                        type: string
+                        example: png
+                      size:
+                        type: integer
+                        example: 300
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Generate QR code (with logo)
+      description: Generate a QR code with full options including an optional centered logo overlay. Logo is provided as a base64 data URL.
+      operationId: generateQrPost
+      tags:
+      - QR Code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QrGenerateBody'
+            example:
+              data: https://citoapi.com
+              size: 400
+              format: png
+              foreground: '#000000'
+              background: '#ffffff'
+              logo:
+                image: data:image/png;base64,iVBORw0KGgo...
+                sizeRatio: 0.25
+                padding: 8
+      responses:
+        '200':
+          description: QR code image or base64 JSON.
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/svg+xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      image:
+                        type: string
+                        example: data:image/png;base64,...
+                      format:
+                        type: string
+                        example: png
+                      size:
+                        type: integer
+                        example: 400
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Validation error message
+    QrGenerateBody:
+      type: object
+      required:
+      - data
+      properties:
+        data:
+          type: string
+          description: Text or URL to encode into the QR code.
+          example: https://citoapi.com
+          maxLength: 2048
+        size:
+          type: integer
+          description: Output image size in pixels (width = height).
+          default: 300
+          minimum: 100
+          maximum: 2000
+          example: 400
+        format:
+          type: string
+          description: Output format.
+          enum:
+          - png
+          - svg
+          - base64
+          default: png
+        foreground:
+          type: string
+          description: Foreground (dark module) hex color.
+          default: '#000000'
+          example: '#000000'
+        background:
+          type: string
+          description: Background hex color.
+          default: '#ffffff'
+          example: '#ffffff'
+        margin:
+          type: integer
+          description: Quiet zone width in modules.
+          default: 4
+          minimum: 0
+          maximum: 10
+        errorCorrection:
+          type: string
+          description: Error correction level. Automatically forced to H when a logo is provided.
+          enum:
+          - L
+          - M
+          - Q
+          - H
+          default: M
+        logo:
+          type: object
+          description: Optional logo to overlay in the center of the QR code. Requires error correction H (set automatically).
+          required:
+          - image
+          properties:
+            image:
+              type: string
+              description: Base64-encoded image with data URL prefix (e.g. data:image/png;base64,...).
+              example: data:image/png;base64,iVBORw0KGgo...
+            sizeRatio:
+              type: number
+              description: Logo size as a fraction of the QR code size. Capped at 0.35 to preserve scannability.
+              default: 0.25
+              minimum: 0.1
+              maximum: 0.35
+            padding:
+              type: integer
+              description: White padding around the logo in pixels.
+              default: 8
+              minimum: 0
+              maximum: 50
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

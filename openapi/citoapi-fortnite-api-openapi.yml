@@ -1,0 +1,732 @@
+openapi: 3.2.0
+info:
+  title: Cito Fortnite API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: Fortnite
+  description: Fortnite competitive matches, tournaments/events, live leaderboards, players, orgs, pro rankings, transfers, and earnings leaderboards.
+paths:
+  /fortnite/search:
+    get:
+      summary: Search Fortnite data
+      description: Global Fortnite search across players, orgs, and tournaments.
+      operationId: searchFortnite
+      tags:
+      - Fortnite
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Search text.
+      responses:
+        '200':
+          description: Search results.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/matches:
+    get:
+      summary: List Fortnite competitive matches
+      description: Lists Fortnite competitive matches (individual games within tournament windows).
+      operationId: listFortniteMatches
+      tags:
+      - Fortnite
+      parameters:
+      - name: eventId
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by Epic event id.
+      - name: eventWindowId
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by Epic event window id.
+      - name: tournamentId
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by internal tournament id.
+      - name: hasTimeline
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Only matches with replay timeline data.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Match list.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/matches/{matchId}:
+    get:
+      summary: Fortnite match details
+      description: Returns one Fortnite competitive match with session metadata.
+      operationId: getFortniteMatch
+      tags:
+      - Fortnite
+      parameters:
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Match id (Epic session id).
+      responses:
+        '200':
+          description: Match details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match not found.
+  /fortnite/matches/{matchId}/stats:
+    get:
+      summary: Fortnite match player stats
+      description: Returns per-player stats (placement, kills, damage) for one Fortnite match.
+      operationId: getFortniteMatchStats
+      tags:
+      - Fortnite
+      parameters:
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Match id.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Match player stats.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match not found.
+  /fortnite/matches/{matchId}/kill-feed:
+    get:
+      summary: Fortnite match kill feed
+      description: Returns the elimination feed for one Fortnite match (from replay data when available).
+      operationId: getFortniteMatchKillFeed
+      tags:
+      - Fortnite
+      parameters:
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Match id.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by elimination type.
+      responses:
+        '200':
+          description: Kill feed.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match not found.
+  /fortnite/tournaments:
+    get:
+      summary: List Fortnite tournaments
+      description: Lists Fortnite tournaments (events) with filters. Also mounted as /fortnite/events.
+      operationId: listFortniteTournaments
+      tags:
+      - Fortnite
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - upcoming
+          - ongoing
+          - completed
+      - name: region
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by region (e.g. NA, EU).
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: tier
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by tournament tier.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: Tournament list with pagination counts.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/tournaments/live:
+    get:
+      summary: Live Fortnite tournaments
+      description: Returns currently live Fortnite tournaments/events (also /fortnite/matches/live).
+      operationId: getFortniteLiveTournaments
+      tags:
+      - Fortnite
+      responses:
+        '200':
+          description: Live tournaments.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/tournaments/upcoming:
+    get:
+      summary: Upcoming Fortnite tournaments
+      description: Returns upcoming Fortnite tournaments/events (also /fortnite/matches/upcoming).
+      operationId: getFortniteUpcomingTournaments
+      tags:
+      - Fortnite
+      responses:
+        '200':
+          description: Upcoming tournaments.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/tournaments/live/{eventId}/{windowId}:
+    get:
+      summary: Live Fortnite event leaderboard
+      description: Returns the live leaderboard for one tournament window (eventId + windowId from Epic). Epic serves 100 teams per page. Use pages (or leaderboardPages) to aggregate multiple pages (default 40 → up to 4000 teams; hard max 50 / FORTNITE_LIVE_LEADERBOARD_MAX_PAGES). Use page (0-based) to start at a given page; alone with pages unset it returns that single page.
+      operationId: getFortniteLiveEventLeaderboard
+      tags:
+      - Fortnite
+      parameters:
+      - name: eventId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Epic event id.
+      - name: windowId
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Epic event window id.
+      - name: pages
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 40
+          minimum: 1
+          maximum: 50
+        description: 'Number of Epic pages to aggregate (100 teams each). Alias: leaderboardPages. Default 40 (up to 4000 teams).'
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+          minimum: 0
+        description: 0-based starting Epic page. Alone (without pages) returns a single page of 100 teams.
+      - name: leaderboardPages
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+        description: Alias of pages.
+      responses:
+        '200':
+          description: Live leaderboard.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Event or window not found.
+  /fortnite/tournaments/{id}:
+    get:
+      summary: Fortnite tournament details
+      description: Returns one Fortnite tournament/event.
+      operationId: getFortniteTournament
+      tags:
+      - Fortnite
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Tournament id.
+      responses:
+        '200':
+          description: Tournament details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Tournament not found.
+  /fortnite/tournaments/{id}/results:
+    get:
+      summary: Fortnite tournament results
+      description: Returns the final leaderboard/results for one Fortnite tournament (alias of /leaderboard).
+      operationId: getFortniteTournamentResults
+      tags:
+      - Fortnite
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Tournament id.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournament results.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Tournament not found.
+  /fortnite/players:
+    get:
+      summary: List Fortnite players
+      description: Lists Fortnite pro players (search with q). Defaults to pro-earnings-filtered results unless includeAll=true.
+      operationId: listFortnitePlayers
+      tags:
+      - Fortnite
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search text.
+      - name: org
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by org slug.
+      - name: minEarnings
+        in: query
+        required: false
+        schema:
+          type: number
+        description: Minimum career earnings (USD).
+      - name: includeAll
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: 'Include non-pro players (alias: all).'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: Player list with pagination counts.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/players/{identifier}:
+    get:
+      summary: Fortnite player details
+      description: Returns one Fortnite player by account id or username.
+      operationId: getFortnitePlayer
+      tags:
+      - Fortnite
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Epic account id or username.
+      responses:
+        '200':
+          description: Player details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found.
+  /fortnite/players/{identifier}/profile:
+    get:
+      summary: Fortnite player lifetime profile stats
+      description: 'Returns lifetime profile stats for one Fortnite player (aliases: /lifetime, /lifetime-stats).'
+      operationId: getFortnitePlayerProfileStats
+      tags:
+      - Fortnite
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Epic account id or username.
+      responses:
+        '200':
+          description: Lifetime profile stats.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found.
+  /fortnite/players/{identifier}/earnings:
+    get:
+      summary: Fortnite player earnings
+      description: Returns the earnings history/summary for one Fortnite player.
+      operationId: getFortnitePlayerEarnings
+      tags:
+      - Fortnite
+      parameters:
+      - name: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Epic account id or username.
+      responses:
+        '200':
+          description: Player earnings.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found.
+  /fortnite/orgs:
+    get:
+      summary: List Fortnite organizations
+      description: Lists Fortnite organizations (also mounted as /fortnite/teams).
+      operationId: listFortniteOrgs
+      tags:
+      - Fortnite
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Organization list.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/orgs/{slug}:
+    get:
+      summary: Fortnite organization details
+      description: Returns one Fortnite organization.
+      operationId: getFortniteOrg
+      tags:
+      - Fortnite
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Organization slug.
+      responses:
+        '200':
+          description: Organization details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Organization not found.
+  /fortnite/orgs/{slug}/roster:
+    get:
+      summary: Fortnite organization roster
+      description: Returns the current roster of a Fortnite organization.
+      operationId: getFortniteOrgRoster
+      tags:
+      - Fortnite
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Organization slug.
+      responses:
+        '200':
+          description: Organization roster.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Organization not found.
+  /fortnite/pros/rankings:
+    get:
+      summary: Fortnite pro rankings (Cito PR)
+      description: Transparent Cito PR-style Fortnite pro rankings calculated from Cito-ingested tournament history (not FortniteTracker PR). Returns `{ success, ... }` with the formula version.
+      operationId: listFortniteProRankings
+      tags:
+      - Fortnite
+      parameters:
+      - name: region
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by region.
+      - name: country
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by country.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Pro rankings with formula version.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/leaderboards/earnings:
+    get:
+      summary: Fortnite earnings leaderboard
+      description: Returns the Fortnite player earnings leaderboard (top earners).
+      operationId: getFortniteEarningsLeaderboard
+      tags:
+      - Fortnite
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Earnings leaderboard.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /fortnite/transfers:
+    get:
+      summary: List Fortnite transfers
+      description: Lists recent Fortnite roster transfers.
+      operationId: listFortniteTransfers
+      tags:
+      - Fortnite
+      parameters:
+      - name: org
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by org slug.
+      - name: player
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by player.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by transfer type.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 25
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: Transfer list.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Validation error message
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

@@ -1,0 +1,948 @@
+openapi: 3.2.0
+info:
+  title: Cito UFC API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: UFC
+  description: UFC rankings, fighters, fighter profile stats, events, fight cards, bouts, and results.
+paths:
+  /ufc:
+    get:
+      summary: UFC API overview
+      description: Returns UFC coverage counts and key endpoint paths.
+      operationId: getUfcOverview
+      tags:
+      - UFC
+      responses:
+        '200':
+          description: UFC overview payload
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/rankings:
+    get:
+      summary: UFC rankings (compatibility)
+      description: Compatibility rankings feed. Prefer GET /ufc/rankings/media for the canonical UFC.com Media Panel rankings feed with freshness metadata.
+      operationId: getUfcRankings
+      tags:
+      - UFC
+      parameters:
+      - name: division
+        in: query
+        required: false
+        schema:
+          type: string
+        example: lightweight
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+      responses:
+        '200':
+          description: Ranking rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/rankings/media:
+    get:
+      summary: UFC Media Panel rankings
+      description: Canonical UFC.com Media Panel rankings feed. Includes champions, official ranks (including ties), rank changes, fighter slugs, and freshness metadata (syncedAt / dataAgeHours).
+      operationId: getUfcMediaRankings
+      tags:
+      - UFC
+      parameters:
+      - name: division
+        in: query
+        required: false
+        schema:
+          type: string
+        example: lightweight
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 200
+      responses:
+        '200':
+          description: Media Panel ranking rows with freshness meta
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/rankings/media/{division}:
+    get:
+      summary: UFC Media Panel rankings by division
+      description: Canonical Media Panel rankings for one division (for example lightweight or middleweight).
+      operationId: getUfcMediaRankingsByDivision
+      tags:
+      - UFC
+      parameters:
+      - name: division
+        in: path
+        required: true
+        schema:
+          type: string
+        example: lightweight
+      responses:
+        '200':
+          description: Media Panel ranking rows for one division
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/fighters:
+    get:
+      summary: List UFC fighters
+      description: Returns UFC fighters with profile metadata. Use includeStats=true to include striking, grappling, defense, and bio stat fields when populated.
+      operationId: listUfcFighters
+      tags:
+      - UFC
+      parameters:
+      - name: division
+        in: query
+        required: false
+        schema:
+          type: string
+        example: welterweight
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: includeStats
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      responses:
+        '200':
+          description: Fighter rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/fighters/{slug}:
+    get:
+      summary: Get UFC fighter profile
+      description: Returns one fighter profile with bio, record, ranking links, image URLs, and fighter stats when available.
+      operationId: getUfcFighter
+      tags:
+      - UFC
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: islam-makhachev
+      responses:
+        '200':
+          description: Fighter profile
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Fighter not found
+  /ufc/fighters/{slug}/stats:
+    get:
+      summary: Get UFC fighter stats
+      description: Returns fighter stats such as striking accuracy, significant strikes landed/attempted, takedown accuracy, SLpM, SApM, takedown defense, and average fight time.
+      operationId: getUfcFighterStats
+      tags:
+      - UFC
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: islam-makhachev
+      responses:
+        '200':
+          description: Fighter stat row
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Stats not found
+  /ufc/events:
+    get:
+      summary: List UFC events
+      description: Returns UFC events with pagination. Use hasStats=true to list events with fight-level and round-level statistics.
+      operationId: listUfcEvents
+      tags:
+      - UFC
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - scheduled
+          - completed
+          - live
+      - name: hasStats
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Only return events with fight-level or round-level stats.
+      - name: includeBouts
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Include bouts and stat rows in each event.
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Search by title, slug, or location.
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      responses:
+        '200':
+          description: Event rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/events/recent:
+    get:
+      summary: List recent UFC events
+      description: Returns recent completed UFC events with pagination. Use hasStats=true for events with fight and round stats.
+      operationId: listRecentUfcEvents
+      tags:
+      - UFC
+      parameters:
+      - name: hasStats
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: includeBouts
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 25
+      responses:
+        '200':
+          description: Recent event rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/events/upcoming:
+    get:
+      summary: List upcoming UFC events
+      description: Returns upcoming UFC events with pagination.
+      operationId: listUpcomingUfcEvents
+      tags:
+      - UFC
+      parameters:
+      - name: includeBouts
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 25
+      responses:
+        '200':
+          description: Upcoming event rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/events/{eventIdOrSlug}:
+    get:
+      summary: Get UFC event detail
+      description: Returns one UFC event by event id, slug, or dataId, including bouts and stats when available.
+      operationId: getUfcEvent
+      tags:
+      - UFC
+      parameters:
+      - name: eventIdOrSlug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-328-chimaev-vs-strickland
+      responses:
+        '200':
+          description: Event detail
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Event not found
+  /ufc/events/{slug}/bouts:
+    get:
+      summary: Get UFC event bouts
+      description: 'Returns fight-card bouts for an event, including fighters, result, winner, method, round, time, bout stats, and round stats when available. Each bout includes nested `referee: { id, name, firstName, lastName } | null` (null when unknown).'
+      operationId: getUfcEventBouts
+      tags:
+      - UFC
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-328-chimaev-vs-strickland
+      - name: round
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+        description: Return only round-level stat rows for a specific round.
+      responses:
+        '200':
+          description: Event bouts
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Event not found
+  /ufc/events/{slug}/stats:
+    get:
+      summary: Get UFC event stats
+      description: Returns all bout-level and round-level stat rows for one UFC event.
+      operationId: getUfcEventStats
+      tags:
+      - UFC
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-328-chimaev-vs-strickland
+      responses:
+        '200':
+          description: Event stats
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Event not found
+  /ufc/bouts:
+    get:
+      summary: List UFC bouts
+      description: 'Returns UFC bouts with pagination. Filter by event, fighter, weight class, status, and stat availability. Each bout includes nested `referee: { id, name, firstName, lastName } | null`.'
+      operationId: listUfcBouts
+      tags:
+      - UFC
+      parameters:
+      - name: event
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Event id, slug, or dataId.
+      - name: fighter
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Fighter name or slug.
+      - name: weightClass
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: hasStats
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: includeStats
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 1
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      responses:
+        '200':
+          description: Bout rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/bouts/{boutId}:
+    get:
+      summary: Get UFC bout detail
+      description: 'Returns one UFC bout with fighters, event context, bout stats, and round stats when available. Includes nested `referee: { id, name, firstName, lastName } | null` (null when unknown).'
+      operationId: getUfcBout
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 770c5302e32916ea
+      - name: round
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+        description: Return only round-level stat rows for a specific round.
+      responses:
+        '200':
+          description: Bout detail
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Bout not found
+  /ufc/bouts/{boutId}/stats:
+    get:
+      summary: Get UFC bout stats
+      description: Returns bout-level fighter totals and round-by-round fighter stats for one bout.
+      operationId: getUfcBoutStats
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 770c5302e32916ea
+      - name: round
+        in: query
+        required: false
+        schema:
+          type: integer
+        example: 1
+        description: Return only rows for a specific round.
+      responses:
+        '200':
+          description: Bout stats
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Bout not found
+  /ufc/bouts/{boutId}/rounds:
+    get:
+      summary: Get UFC bout round stats
+      description: Returns round-by-round fighter stat rows for one bout.
+      operationId: getUfcBoutRounds
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 770c5302e32916ea
+      responses:
+        '200':
+          description: Round stat rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Bout not found
+  /ufc/bouts/{boutId}/odds:
+    get:
+      summary: Get UFC bout odds
+      description: 'Every bookmaker line for one bout: moneyline per fighter plus prop markets (method of victory, round totals, fight goes the distance). Each outcome carries fighter.slug for a stable join and isAvailable, which is false for a finished fight''s closing line. Pass ?available=true to receive only markets a book is offering right now.'
+      operationId: getUfcBoutOdds
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: 770c5302e32916ea
+      - name: available
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: true = only lines currently offered
+      - name: bookmaker
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter to one bookmaker slug or group
+      responses:
+        '200':
+          description: Markets with outcomes per bookmaker
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Bout not found
+  /ufc/events/{slug}/odds:
+    get:
+      summary: Get UFC event odds
+      description: Odds for every bout on a card in one call, grouped by fight. Same outcome shape and ?available / ?bookmaker filters as the bout route.
+      operationId: getUfcEventOdds
+      tags:
+      - UFC
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-330
+      - name: available
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: bookmaker
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Odds grouped by fight
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Event not found
+  /ufc/live:
+    get:
+      summary: UFC live overview
+      description: Live fight-night overview. `liveBouts` = fights in progress; `nextBouts` / `nextArmedBout` = fights up next (not live yet); `events` = fight-night cards being tracked (not matchups). `meta` includes `emptyReason` when nothing is live and `lagSeconds` (data freshness). Prefer SSE `/ufc/live/stream` or WebSocket `/ufc/live/ws` for push updates.
+      operationId: getUfcLiveOverview
+      tags:
+      - UFC
+      responses:
+        '200':
+          description: liveBouts + nextBouts + events; meta.emptyReason / lagSeconds
+          content:
+            application/json:
+              example:
+                success: true
+                data:
+                  liveBouts:
+                  - boutId: ufc-1234567
+                    status: live
+                    currentRound: 2
+                    currentTime: '3:12'
+                    lagSeconds: 8
+                    recommendedPollSeconds: 12
+                  events:
+                  - eventSlug: ufc-fight-night-example
+                    status: live
+                    currentLiveFmid: '1234567'
+                    recommendedPollSeconds: 12
+                meta:
+                  stream: /api/v1/ufc/live/stream
+                  websocket: /api/v1/ufc/live/ws
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/live/events:
+    get:
+      summary: List UFC live events
+      description: Fight-night events currently tracked live, with their status.
+      operationId: listUfcLiveEvents
+      tags:
+      - UFC
+      responses:
+        '200':
+          description: Live event rows with lagSeconds + recommendedPollSeconds
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/live/events/{slug}:
+    get:
+      summary: Get UFC live event
+      description: 'Live status and tracked fights for one event. Alias: GET /ufc/events/{slug}/live.'
+      operationId: getUfcLiveEvent
+      tags:
+      - UFC
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-fight-night-example
+      responses:
+        '200':
+          description: Live event + tracking
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Live event not found
+  /ufc/live/{boutId}:
+    get:
+      summary: Get UFC live bout
+      description: Live state and fight details for one bout (use a boutId from /live). Includes lagSeconds and recommendedPollSeconds.
+      operationId: getUfcLiveBout
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-1234567
+      responses:
+        '200':
+          description: Live bout payload
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Bout not found
+  /ufc/live/{boutId}/state:
+    get:
+      summary: Get UFC live bout state
+      description: Compact live state with lagSeconds and recommendedPollSeconds for polling clients.
+      operationId: getUfcLiveBoutState
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-1234567
+      responses:
+        '200':
+          description: Live state
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: State not found
+  /ufc/live/{boutId}/snapshots:
+    get:
+      summary: List UFC live bout snapshots
+      description: Timestamped live snapshots for one bout (round, time and method as the fight progresses).
+      operationId: listUfcLiveBoutSnapshots
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-1234567
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      responses:
+        '200':
+          description: Snapshot rows
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/live/stream:
+    get:
+      summary: UFC live SSE stream
+      description: 'Server-Sent Events push feed of live bout updates, on every plan. Filter with `boutId` and/or `eventSlug`. Events: `ready` (sent first; carries `delay_seconds` and `billing`), `ufc.live.snapshot` (the bout''s current state, when `boutId` is set), `ufc.live.update`, `ping` every 15 seconds, and `error` just before the server closes the stream.
+
+
+        **Billing.** An open stream counts toward your monthly quota like polling: one request when it connects, then one request for every 15 seconds it stays open (the same as polling `/ufc/live` every 15 seconds). When the quota runs out the stream sends an `error` event with code `RATE_LIMIT_EXCEEDED` and closes; connecting with no quota left returns 429.
+
+
+        **Delay.** Free and Starter plans receive every event 60 seconds late, the same delay as the polled live endpoints. Other plans are real-time.
+
+
+        **Bout ids.** Live payloads (stream, WebSocket, `/ufc/live/{boutId}/state`) carry `boutId` in the live form (`ufc-...`, also the room name) and `cardBoutId`, the id the card itself uses (`/ufc/events/{slug}/bouts`, `/ufc/bouts/{id}`). Join live updates to the card on `cardBoutId`; every endpoint accepts either form.
+
+
+        Room-based WebSockets: `/ufc/live/ws`.'
+      operationId: streamUfcLive
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: query
+        required: false
+        schema:
+          type: string
+        example: ufc-1234567
+      - name: eventSlug
+        in: query
+        required: false
+        schema:
+          type: string
+        example: ufc-fight-night-example
+      responses:
+        '200':
+          description: 'text/event-stream (events: ready, ufc.live.snapshot, ufc.live.update, ping, error)'
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: 'event: ready
+
+                data: {"success":true,"stream":"ufc.live","boutId":"ufc-1234567","eventSlug":null,"redis_configured":true,"redis_subscriber_ready":true,"websocket":"/api/v1/ufc/live/ws","recommendedPollSeconds":12,"delay_seconds":0,"billing":{"requests_per_interval":1,"interval_seconds":15}}
+
+
+                event: ping
+
+                data: {"ok":true,"ts":"2026-09-25T20:15:00.000Z"}
+
+
+                event: error
+
+                data: {"success":false,"error":{"code":"RATE_LIMIT_EXCEEDED","message":"You have used 500 of 500 requests in your current period. It resets on 2026-10-01 (about 6 days)."}}
+
+
+                '
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Monthly request quota already used up when connecting. Mid-stream, the same limit arrives as an `error` event and the stream closes.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/live/{boutId}/socket:
+    get:
+      summary: UFC live transport contract (SSE + WebSocket)
+      description: Documents UFC live SSE and WebSocket auth, rooms (bout:{id}|event:{slug}), and envelope shape. UFC WebSocket is available at /api/v1/ufc/live/ws. Does not claim LoL/CS2 WebSocket availability.
+      operationId: getUfcLiveSocketDocs
+      tags:
+      - UFC
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-1234567
+      responses:
+        '200':
+          description: Transport contract
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/live/health:
+    get:
+      summary: UFC live worker health
+      description: 'Health of the UFC live service: whether live tracking is running and how fresh its data is (`freshestHeartbeatLagSeconds`), plus `emptyReason`, `activeTracking`, `nextArmedBout` and `degradedReason`.'
+      operationId: getUfcLiveHealth
+      tags:
+      - UFC
+      responses:
+        '200':
+          description: Health payload (emptyReason, lag, nextArmedBout)
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /ufc/events/{slug}/live:
+    get:
+      summary: Event live alias
+      description: Alias of GET /ufc/live/events/{slug}.
+      operationId: getUfcEventLive
+      tags:
+      - UFC
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        example: ufc-fight-night-example
+      responses:
+        '200':
+          description: Live event + tracking
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Live event not found
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Validation error message
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

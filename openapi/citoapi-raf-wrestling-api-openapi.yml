@@ -1,0 +1,2088 @@
+openapi: 3.2.0
+info:
+  title: Cito RAF Wrestling API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: RAF Wrestling
+  description: 'Real American Freestyle professional wrestling: events, cards, results with per-period scores and takedowns, athletes, champions and live results.'
+paths:
+  /raf:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: RAF overview
+      description: League summary, counts, next and last event, current champions.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRaf
+      x-operation-id-source: derived
+  /raf/search:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Search athletes and events
+      description: Name or slug to ids. Use before deep calls.
+      parameters:
+      - name: q
+        in: query
+        description: Free-text filter.
+        schema:
+          type: string
+        required: true
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - athlete
+          - event
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafSearchResult'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafSearch
+      x-operation-id-source: derived
+  /raf/sync/status:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Data freshness
+      description: Last successful sync, failed fetches in 24 h, counts.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafSyncStatus
+      x-operation-id-source: derived
+  /raf/coverage:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Field coverage per event
+      description: How many bouts carry period scores, takedowns, confirmed method and end time.
+      parameters:
+      - name: event
+        in: query
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafCoverage
+      x-operation-id-source: derived
+  /raf/rules:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Ruleset
+      description: Periods, scoring values, win methods, tiebreak and rule versions by event.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafRules
+      x-operation-id-source: derived
+  /raf/events:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: List events
+      description: All RAF events, newest first.
+      parameters:
+      - name: status
+        in: query
+        description: scheduled, live, completed (comma-separated).
+        schema:
+          type: string
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - flagship
+          - international
+      - name: from
+        in: query
+        description: Earliest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        description: Latest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: q
+        in: query
+        description: Free-text filter.
+        schema:
+          type: string
+      - name: includeBouts
+        in: query
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafEvents
+      x-operation-id-source: derived
+  /raf/events/upcoming:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Upcoming events
+      description: Scheduled and live events, soonest first, with their cards.
+      parameters:
+      - name: includeBouts
+        in: query
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafEventsUpcoming
+      x-operation-id-source: derived
+  /raf/events/recent:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Recent results
+      description: Completed events, newest first.
+      parameters:
+      - name: includeBouts
+        in: query
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafEventsRecent
+      x-operation-id-source: derived
+  /raf/events/{slug}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Event detail
+      description: Event with its full card (main event first).
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Event slug (raf07, raf-georgia; "RAF 7" and raf-07 also resolve).
+        schema:
+          type: string
+      - name: includeBouts
+        in: query
+        schema:
+          type: boolean
+      - name: includeCancelled
+        in: query
+        description: Include bouts that left the card.
+        schema:
+          type: boolean
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    $ref: '#/components/schemas/RafEvent'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafEventsBySlug
+      x-operation-id-source: derived
+  /raf/events/{slug}/bouts:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Event card
+      description: 'Every bout on the card in official order. Aliases: /fights, /fight-card, /card.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Event slug (raf07, raf-georgia; "RAF 7" and raf-07 also resolve).
+        schema:
+          type: string
+      - name: includeCancelled
+        in: query
+        description: Include bouts that left the card.
+        schema:
+          type: boolean
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafEventsBySlugBouts
+      x-operation-id-source: derived
+  /raf/events/{slug}/results:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Event results
+      description: 'Completed bouts only. Alias: /stats.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Event slug (raf07, raf-georgia; "RAF 7" and raf-07 also resolve).
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafEventsBySlugResults
+      x-operation-id-source: derived
+  /raf/bouts:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Query bouts
+      description: 'Bouts across all events. Aliases: /fights, /matches.'
+      parameters:
+      - name: event
+        in: query
+        schema:
+          type: string
+      - name: athlete
+        in: query
+        description: Athlete slug or name; adds a perspective block.
+        schema:
+          type: string
+      - name: opponent
+        in: query
+        schema:
+          type: string
+      - name: weightClass
+        in: query
+        schema:
+          type: string
+      - name: gender
+        in: query
+        schema:
+          type: string
+          enum:
+          - male
+          - female
+      - name: method
+        in: query
+        schema:
+          type: string
+          description: decision, criteria, tech_fall, fall, injury_default (comma-separated)
+      - name: title
+        in: query
+        schema:
+          type: boolean
+      - name: status
+        in: query
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: Earliest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        description: Latest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: includeCancelled
+        in: query
+        description: Include bouts that left the card.
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafBouts
+      x-operation-id-source: derived
+  /raf/bouts/{boutId}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Bout detail
+      description: Result, method, final score, takedowns, per-period scores.
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        description: 'Bout id from an event card: {event}--{athleteA}--{athleteB}.'
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    $ref: '#/components/schemas/RafBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafBoutsByBoutId
+      x-operation-id-source: derived
+  /raf/bouts/{boutId}/periods:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Per-period scores
+      description: 'Points per period and running totals. Alias: /rounds.'
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        description: 'Bout id from an event card: {event}--{athleteA}--{athleteB}.'
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafBoutsByBoutIdPeriods
+      x-operation-id-source: derived
+  /raf/bouts/{boutId}/stats:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Bout stats
+      description: Points, takedowns, takedown vs other points, points by period. Starter plan and above.
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        description: 'Bout id from an event card: {event}--{athleteA}--{athleteB}.'
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafBoutsByBoutIdStats
+      x-operation-id-source: derived
+  /raf/athletes:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: List athletes
+      description: 'Roster with records. Aliases: /wrestlers, /fighters.'
+      parameters:
+      - name: q
+        in: query
+        description: Free-text filter.
+        schema:
+          type: string
+      - name: gender
+        in: query
+        schema:
+          type: string
+          enum:
+          - male
+          - female
+      - name: country
+        in: query
+        schema:
+          type: string
+      - name: division
+        in: query
+        schema:
+          type: string
+      - name: champion
+        in: query
+        schema:
+          type: boolean
+      - name: active
+        in: query
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafAthlete'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafAthletes
+      x-operation-id-source: derived
+  /raf/athletes/{slug}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Athlete profile
+      description: Profile, record, titles, recent and upcoming bouts; includeStats=true adds career stats.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Athlete slug, e.g. kyle-snyder.
+        schema:
+          type: string
+      - name: includeStats
+        in: query
+        schema:
+          type: boolean
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    $ref: '#/components/schemas/RafAthlete'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafAthletesBySlug
+      x-operation-id-source: derived
+  /raf/athletes/{slug}/bouts:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Athlete bout history
+      description: 'Every bout from the athlete''s perspective. Aliases: /history, /fights, /matches.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Athlete slug, e.g. kyle-snyder.
+        schema:
+          type: string
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafBout'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafAthletesBySlugBouts
+      x-operation-id-source: derived
+  /raf/athletes/{slug}/stats:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Athlete career stats
+      description: Wins by method, criteria record, points and takedowns per bout, scoring by period, streak. Starter plan and above.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Athlete slug, e.g. kyle-snyder.
+        schema:
+          type: string
+      - name: from
+        in: query
+        description: Earliest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        description: Latest event date (YYYY-MM-DD).
+        schema:
+          type: string
+          format: date
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafAthletesBySlugStats
+      x-operation-id-source: derived
+  /raf/athletes/{slug}/h2h/{opponent}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Head-to-head (path form)
+      description: Same as /raf/h2h.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Athlete slug, e.g. kyle-snyder.
+        schema:
+          type: string
+      - name: opponent
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafAthletesBySlugH2hByOpponent
+      x-operation-id-source: derived
+  /raf/h2h:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Head-to-head
+      description: 'Meetings, record and common opponents. Alias: /head-to-head.'
+      parameters:
+      - name: athlete1
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: athlete2
+        in: query
+        required: true
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafH2h
+      x-operation-id-source: derived
+  /raf/divisions:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Divisions
+      description: '8 men''s and 4 women''s weight classes with limits and current champion. Alias: /weight-classes.'
+      parameters:
+      - name: gender
+        in: query
+        schema:
+          type: string
+          enum:
+          - male
+          - female
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafDivisions
+      x-operation-id-source: derived
+  /raf/divisions/{division}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Division detail
+      description: Title holder, recent bouts and athletes in a division.
+      parameters:
+      - name: division
+        in: path
+        required: true
+        description: Division key (men-heavyweight, women-strawweight, catchweight, crossover-cruiserweight).
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafDivisionsByDivision
+      x-operation-id-source: derived
+  /raf/champions:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Current champions
+      description: 'Undisputed, interim, crossover and legends titles, including vacancies. Alias: /titles.'
+      parameters:
+      - name: type
+        in: query
+        schema:
+          type: string
+          enum:
+          - undisputed
+          - interim
+          - crossover
+          - legends
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RafTitle'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafChampions
+      x-operation-id-source: derived
+  /raf/titles/{titleKey}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Title detail
+      description: Champion, observed changes and title bouts in that division.
+      parameters:
+      - name: titleKey
+        in: path
+        required: true
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafTitlesByTitleKey
+      x-operation-id-source: derived
+  /raf/live:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Live cards
+      description: 'Cards in progress or finished in the last 12 h: results so far, probable next bout. No in-bout score or clock.'
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafLive
+      x-operation-id-source: derived
+  /raf/live/health:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Live pipeline health
+      description: Poll interval and freshness.
+      parameters: []
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafLiveHealth
+      x-operation-id-source: derived
+  /raf/live/stream:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Live stream (SSE)
+      description: 'Server-sent events: bout_result, card_change, correction, ping. Billed one request per interval while open.'
+      parameters:
+      - name: eventSlug
+        in: query
+        schema:
+          type: string
+      - name: boutId
+        in: query
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafLiveStream
+      x-operation-id-source: derived
+  /raf/live/events/{slug}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Live card for one event
+      description: 'Alias: /raf/events/{slug}/live.'
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Event slug (raf07, raf-georgia; "RAF 7" and raf-07 also resolve).
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafLiveEventsBySlug
+      x-operation-id-source: derived
+  /raf/live/{boutId}:
+    get:
+      tags:
+      - RAF Wrestling
+      summary: Live bout state
+      description: 'Scheduled, or the result once the bout finishes. Alias: /state.'
+      parameters:
+      - name: boutId
+        in: path
+        required: true
+        description: 'Bout id from an event card: {event}--{athleteA}--{athleteB}.'
+        schema:
+          type: string
+      security:
+      - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - success
+                - data
+                properties:
+                  success:
+                    type: boolean
+                    enum:
+                    - true
+                  data:
+                    type: object
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+        '404':
+          description: Not found (RAF_EVENT_NOT_FOUND, RAF_BOUT_NOT_FOUND, RAF_ATHLETE_NOT_FOUND, ...)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RafError'
+      operationId: getRafLiveByBoutId
+      x-operation-id-source: derived
+components:
+  schemas:
+    RafEvent:
+      type: object
+      properties:
+        slug:
+          type: string
+          example: raf07
+        name:
+          type: string
+          example: RAF 07
+        headline:
+          type: string
+          example: Tsarukyan vs Poullas
+        type:
+          type: string
+          enum:
+          - flagship
+          - international
+        number:
+          type:
+          - integer
+          - 'null'
+        sequence:
+          type: integer
+        status:
+          type: string
+          enum:
+          - scheduled
+          - live
+          - completed
+          - postponed
+          - cancelled
+        cancellation:
+          type:
+          - object
+          - 'null'
+          description: Present when status is cancelled.
+          properties:
+            reason:
+              type:
+              - string
+              - 'null'
+              example: event_page_removed
+        previousDates:
+          type: array
+          items:
+            type: string
+            format: date
+        date:
+          type: string
+          format: date
+        localTime:
+          type:
+          - string
+          - 'null'
+        timezone:
+          type:
+          - string
+          - 'null'
+        startsAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+        location:
+          type: object
+          properties:
+            text:
+              type: string
+            venue:
+              type:
+              - string
+              - 'null'
+            city:
+              type:
+              - string
+              - 'null'
+            region:
+              type:
+              - string
+              - 'null'
+            country:
+              type:
+              - string
+              - 'null'
+        attendance:
+          type:
+          - integer
+          - 'null'
+        bouts:
+          type: object
+          properties:
+            total:
+              type: integer
+            completed:
+              type: integer
+        card:
+          type: array
+          items:
+            $ref: '#/components/schemas/RafBout'
+    RafSearchResult:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - athlete
+          - event
+        slug:
+          type: string
+        name:
+          type: string
+        score:
+          type: number
+    RafError:
+      type: object
+      properties:
+        success:
+          type: boolean
+          enum:
+          - false
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            status:
+              type: integer
+            docs:
+              type: string
+    RafTitle:
+      type: object
+      properties:
+        titleKey:
+          type: string
+          example: men-heavyweight
+        name:
+          type: string
+        type:
+          type: string
+        gender:
+          type: string
+        vacant:
+          type: boolean
+        champion:
+          type:
+          - object
+          - 'null'
+          properties:
+            slug:
+              type: string
+            name:
+              type: string
+    RafAthlete:
+      type: object
+      properties:
+        slug:
+          type: string
+        name:
+          type: string
+        gender:
+          type:
+          - string
+          - 'null'
+        country:
+          type:
+          - string
+          - 'null'
+        hometown:
+          type:
+          - string
+          - 'null'
+        club:
+          type:
+          - string
+          - 'null'
+        age:
+          type:
+          - integer
+          - 'null'
+        record:
+          type: object
+          properties:
+            wins:
+              type: integer
+            losses:
+              type: integer
+            draws:
+              type: integer
+            bouts:
+              type: integer
+        titles:
+          type: array
+          items:
+            type: object
+    RafBout:
+      type: object
+      properties:
+        boutId:
+          type: string
+          example: raf07--arman-tsarukyan--georgio-poullas
+        event:
+          type: object
+          properties:
+            slug:
+              type: string
+            name:
+              type: string
+            date:
+              type: string
+              format: date
+        order:
+          type: integer
+          description: 1 = main event
+        slot:
+          type:
+          - string
+          - 'null'
+          example: MAIN EVENT
+        weightClass:
+          type: object
+          properties:
+            label:
+              type: string
+            key:
+              type:
+              - string
+              - 'null'
+            limitLb:
+              type:
+              - integer
+              - 'null'
+            gender:
+              type:
+              - string
+              - 'null'
+            crossover:
+              type: boolean
+        titleFight:
+          type:
+          - string
+          - 'null'
+          enum:
+          - championship
+          - interim
+        status:
+          type: string
+          enum:
+          - scheduled
+          - completed
+          - cancelled
+        athletes:
+          type: array
+          minItems: 2
+          maxItems: 2
+          items:
+            type: object
+            properties:
+              slug:
+                type: string
+              name:
+                type: string
+              country:
+                type:
+                - string
+                - 'null'
+                description: ISO-3
+              age:
+                type:
+                - integer
+                - 'null'
+              club:
+                type:
+                - string
+                - 'null'
+              hometown:
+                type:
+                - string
+                - 'null'
+              score:
+                type:
+                - integer
+                - 'null'
+              takedowns:
+                type:
+                - integer
+                - 'null'
+              result:
+                type:
+                - string
+                - 'null'
+                enum:
+                - win
+                - loss
+        winner:
+          type:
+          - object
+          - 'null'
+          properties:
+            slug:
+              type: string
+            name:
+              type: string
+        result:
+          type:
+          - object
+          - 'null'
+          properties:
+            method:
+              type:
+              - string
+              - 'null'
+              enum:
+              - decision
+              - criteria
+              - tech_fall
+              - fall
+              - injury_default
+              - disqualification
+              - forfeit
+            methodConfirmed:
+              type: boolean
+              description: false when the method is derived from the score (tie = criteria, 10+ margin = tech fall)
+            score:
+              type:
+              - string
+              - 'null'
+              example: 9-3
+            winnerScore:
+              type:
+              - integer
+              - 'null'
+            loserScore:
+              type:
+              - integer
+              - 'null'
+            margin:
+              type:
+              - integer
+              - 'null'
+            endPeriod:
+              type:
+              - integer
+              - 'null'
+            endClock:
+              type:
+              - string
+              - 'null'
+            elapsedSeconds:
+              type:
+              - integer
+              - 'null'
+        periods:
+          type: array
+          items:
+            type: object
+            properties:
+              period:
+                type: integer
+              scores:
+                type: array
+                items:
+                  type:
+                  - integer
+                  - 'null'
+        periodScoresReliable:
+          type: boolean
+        cancellation:
+          type:
+          - object
+          - 'null'
+          description: Present when status is cancelled (bouts off the card are kept, never deleted; ask with includeCancelled=true).
+          properties:
+            reason:
+              type: string
+              enum:
+              - removed_from_card
+              - moved
+              - opponent_changed
+              - event_cancelled
+            movedToEvent:
+              type:
+              - string
+              - 'null'
+              description: Event slug the same two athletes are now booked on.
+            replacedByBoutId:
+              type:
+              - string
+              - 'null'
+              description: Bout on the same card where one of the athletes now competes.
+            removedAt:
+              type:
+              - string
+              - 'null'
+              format: date-time
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

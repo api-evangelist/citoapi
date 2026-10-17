@@ -1,0 +1,51 @@
+openapi: 3.2.0
+info:
+  title: Cito Utility API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: Utility
+  description: Health and status endpoints.
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Returns server status and uptime.
+      operationId: getHealth
+      security: []
+      tags:
+      - Utility
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    example: '2026-03-29T00:00:00.000Z'
+                  uptime:
+                    type: number
+                    example: 3600.5
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

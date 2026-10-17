@@ -1,0 +1,212 @@
+openapi: 3.2.0
+info:
+  title: Cito Dota 2 API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: Dota 2
+  description: Dota 2 esports matches, teams, players, tournaments, player stats, and radar snapshots.
+paths:
+  /dota2:
+    get:
+      summary: Dota 2 API overview
+      description: Returns Dota 2 coverage counts, source status, and sync metadata.
+      operationId: getDota2Overview
+      tags:
+      - Dota 2
+      responses:
+        '200':
+          description: Dota 2 overview.
+  /dota2/search:
+    get:
+      summary: Search Dota 2 data
+      description: Search Dota 2 teams, players, tournaments, and matches.
+      operationId: searchDota2
+      tags:
+      - Dota 2
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Search results.
+  /dota2/matches/live:
+    get:
+      summary: Live Dota 2 matches
+      description: Cito Dota live board. When a series safely links to Valve/OpenDota live, each match may include a `live` snapshot (clock, kills, gold lead, roster). Series map wins stay on schedule fields.
+      operationId: getDota2LiveMatches
+      tags:
+      - Dota 2
+      responses:
+        '200':
+          description: Live matches (optional per-match Cito live snapshot).
+  /dota2/matches/{matchId}/live:
+    get:
+      summary: Cito Dota match live snapshot
+      description: Cito live snapshot for a series via safe team-pair link to Valve/OpenDota. Does not invent positions or map winners from gold. Sticky Valve match ids support postgame draft/stats. Optional Steam scoreboard when STEAM_WEB_API_KEY is set.
+      operationId: getDota2MatchLive
+      tags:
+      - Dota 2
+      parameters:
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Cito live snapshot (clock, kills, lead, roster; seriesWinner always null).
+        '404':
+          description: Match not found or no safe Valve live link.
+        '503':
+          description: Live enrichment temporarily disabled.
+  /dota2/matches/upcoming:
+    get:
+      summary: Upcoming Dota 2 matches
+      description: Returns upcoming Dota 2 matches from the synced schedule.
+      operationId: getDota2UpcomingMatches
+      tags:
+      - Dota 2
+      responses:
+        '200':
+          description: Upcoming matches.
+  /dota2/matches/recent:
+    get:
+      summary: Recent Dota 2 matches
+      description: Returns recent Dota 2 results.
+      operationId: getDota2RecentMatches
+      tags:
+      - Dota 2
+      responses:
+        '200':
+          description: Recent matches.
+  /dota2/matches/{matchId}:
+    get:
+      summary: Dota 2 match details
+      description: Returns match metadata, teams, tournament context, games, draft rows, and player stats where available.
+      operationId: getDota2Match
+      tags:
+      - Dota 2
+      parameters:
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Match detail.
+        '404':
+          description: Match not found.
+  /dota2/matches/{matchId}/player-stats:
+    get:
+      summary: Dota 2 match player stats
+      description: Returns per-game player stat rows for a Dota 2 match where enrichment has populated them.
+      operationId: getDota2MatchPlayerStats
+      tags:
+      - Dota 2
+      parameters:
+      - name: matchId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Player stats or availability metadata.
+  /dota2/players/{playerIdOrSlug}/radar:
+    get:
+      summary: Dota 2 player radar
+      description: Returns precomputed percentile radar/spider graph scores for carry, mid, offlane, or support where enough source data exists.
+      operationId: getDota2PlayerRadar
+      tags:
+      - Dota 2
+      parameters:
+      - name: playerIdOrSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: role
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - carry
+          - mid
+          - offlane
+          - support
+          - unknown
+      - name: window
+        in: query
+        required: false
+        schema:
+          type: string
+          example: 90d
+      responses:
+        '200':
+          description: Radar scores or availability metadata.
+  /dota2/teams/{teamIdOrSlug}/radar:
+    get:
+      summary: Dota 2 team radar
+      description: Returns precomputed percentile radar scores for team style metrics where enough source data exists.
+      operationId: getDota2TeamRadar
+      tags:
+      - Dota 2
+      parameters:
+      - name: teamIdOrSlug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Team radar scores or availability metadata.
+  /dota2/teams:
+    get:
+      summary: List Dota 2 teams
+      operationId: listDota2Teams
+      tags:
+      - Dota 2
+      responses:
+        '200':
+          description: Dota 2 teams.
+  /dota2/players:
+    get:
+      summary: List Dota 2 players
+      operationId: listDota2Players
+      tags:
+      - Dota 2
+      responses:
+        '200':
+          description: Dota 2 players.
+  /dota2/tournaments:
+    get:
+      summary: List Dota 2 tournaments
+      operationId: listDota2Tournaments
+      tags:
+      - Dota 2
+      responses:
+        '200':
+          description: Dota 2 tournaments.
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com

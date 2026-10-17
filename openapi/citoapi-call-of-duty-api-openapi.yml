@@ -1,0 +1,763 @@
+openapi: 3.2.0
+info:
+  title: Cito Call of Duty API
+  version: 1.0.0
+  description: Utilities API — QR code generation and sports/esports data (Fortnite, CoD, LoL, Apex, Dota 2, CS2, UFC, Tennis, RAF Wrestling, BKFC).
+  contact:
+    name: Cito API Support
+    url: https://citoapi.com
+  x-logo:
+    url: https://citoapi.com/logo.png
+servers:
+- url: https://api.citoapi.com/api/v1
+  description: Production
+security:
+- ApiKeyAuth: []
+tags:
+- name: Call of Duty
+  description: Call of Duty (CDL) matches, live scores, players, organizations, tournaments, standings, transfers, and leaderboards.
+paths:
+  /cod/search:
+    get:
+      summary: Search Call of Duty data
+      description: Search COD players, organizations, and tournaments. Returns a `{ success, data }` envelope.
+      operationId: searchCod
+      tags:
+      - Call of Duty
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+        description: Search text.
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - players
+          - orgs
+          - tournaments
+        description: Restrict to one entity type.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Max results per type.
+      responses:
+        '200':
+          description: Search results.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/matches:
+    get:
+      summary: Recent Call of Duty matches
+      description: Convenience alias for recently completed COD matches. Same filters and shape as /cod/matches/recent.
+      operationId: listCodMatches
+      tags:
+      - Call of Duty
+      parameters:
+      - name: team
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by team/org slug.
+      - name: tournamentId
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by tournament id.
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by season (e.g. 2026).
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Only matches from the last N days.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Recently completed matches.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/matches/live:
+    get:
+      summary: Live Call of Duty matches
+      description: Returns currently live CDL matches (alias of /cod/cdl/live).
+      operationId: getCodLiveMatches
+      tags:
+      - Call of Duty
+      responses:
+        '200':
+          description: Live matches.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/matches/upcoming:
+    get:
+      summary: Upcoming Call of Duty matches
+      description: Returns upcoming scheduled/live COD matches from the database.
+      operationId: listCodUpcomingMatches
+      tags:
+      - Call of Duty
+      parameters:
+      - name: team
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by team/org slug.
+      - name: tournamentId
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by tournament id.
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by season (e.g. 2026).
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Upcoming matches.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/matches/recent:
+    get:
+      summary: Recently completed Call of Duty matches
+      description: Returns recently completed COD matches with scores and map counts.
+      operationId: listCodRecentMatches
+      tags:
+      - Call of Duty
+      parameters:
+      - name: team
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by team/org slug.
+      - name: tournamentId
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by tournament id.
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by season (e.g. 2026).
+      - name: days
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Only matches from the last N days.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Recently completed matches.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/matches/{id}:
+    get:
+      summary: Call of Duty match details
+      description: Returns one COD match with teams, score, tournament context, and status.
+      operationId: getCodMatch
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Match id.
+      responses:
+        '200':
+          description: Match details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match not found.
+  /cod/matches/{id}/maps:
+    get:
+      summary: Call of Duty match map breakdown
+      description: Returns the map-by-map breakdown for a match (mode, map name, scores, per-map stats).
+      operationId: getCodMatchMaps
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Match id.
+      responses:
+        '200':
+          description: Map-by-map breakdown.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match not found.
+  /cod/matches/{id}/player-stats:
+    get:
+      summary: Call of Duty match player stats
+      description: Returns match-level player stats aggregated from per-map stats.
+      operationId: getCodMatchPlayerStats
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Match id.
+      - name: includeMaps
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: true
+        description: Include per-map stat rows.
+      responses:
+        '200':
+          description: Player stats for the match.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Match not found.
+  /cod/players:
+    get:
+      summary: List Call of Duty players
+      description: Lists COD players with optional filters. Returns players with pagination counts.
+      operationId: listCodPlayers
+      tags:
+      - Call of Duty
+      parameters:
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        description: 'Case-insensitive IGN search (alias: q).'
+      - name: team
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by current team/org slug.
+      - name: nationality
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by nationality.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: Player list.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/players/{id}:
+    get:
+      summary: Call of Duty player details
+      description: Returns one COD player. Accepts a codPlayerId, current IGN, or activisionId as the id.
+      operationId: getCodPlayer
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: codPlayerId, IGN, or activisionId.
+      responses:
+        '200':
+          description: Player details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found.
+  /cod/players/{id}/stats:
+    get:
+      summary: Call of Duty player season stats
+      description: Returns player season stats (K/D, damage, hill time, and related aggregates).
+      operationId: getCodPlayerStats
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: codPlayerId, IGN, or activisionId.
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Season filter (e.g. 2026).
+      responses:
+        '200':
+          description: Player season stats.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found.
+  /cod/players/{id}/matches:
+    get:
+      summary: Call of Duty player match history
+      description: Returns a player's recent match history with their per-match stats.
+      operationId: getCodPlayerMatches
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: codPlayerId, IGN, or activisionId.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: includeMapStats
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Include per-map stats per match.
+      responses:
+        '200':
+          description: Player match history.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Player not found.
+  /cod/orgs:
+    get:
+      summary: List Call of Duty organizations
+      description: Lists COD organizations (also mounted as /cod/teams).
+      operationId: listCodOrgs
+      tags:
+      - Call of Duty
+      parameters:
+      - name: region
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by region.
+      - name: franchiseOnly
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Only CDL franchise teams.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Organization list.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/orgs/{slug}:
+    get:
+      summary: Call of Duty organization details
+      description: Returns one COD organization (also mounted as /cod/teams/{slug}).
+      operationId: getCodOrg
+      tags:
+      - Call of Duty
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Organization slug.
+      responses:
+        '200':
+          description: Organization details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Organization not found.
+  /cod/orgs/{slug}/roster:
+    get:
+      summary: Call of Duty organization roster
+      description: Returns the current roster of a COD organization.
+      operationId: getCodOrgRoster
+      tags:
+      - Call of Duty
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Organization slug.
+      - name: includeFormer
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Include former roster members.
+      responses:
+        '200':
+          description: Organization roster.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Organization not found.
+  /cod/tournaments:
+    get:
+      summary: List Call of Duty tournaments
+      description: Lists COD tournaments with optional filters.
+      operationId: listCodTournaments
+      tags:
+      - Call of Duty
+      parameters:
+      - name: game
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - bo6
+          - mw3
+          - mw2
+        description: Filter by game title.
+      - name: tier
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - S
+          - A
+          - B
+        description: Filter by tournament tier.
+      - name: completed
+        in: query
+        required: false
+        schema:
+          type: boolean
+        description: Only completed (or only open) tournaments.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Tournament list.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/tournaments/{id}:
+    get:
+      summary: Call of Duty tournament details
+      description: Returns one COD tournament with results and matches.
+      operationId: getCodTournament
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Tournament id.
+      responses:
+        '200':
+          description: Tournament details.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Tournament not found.
+  /cod/tournaments/{id}/results:
+    get:
+      summary: Call of Duty tournament results
+      description: Returns final placements (team results) for one COD tournament.
+      operationId: getCodTournamentResults
+      tags:
+      - Call of Duty
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Tournament id.
+      responses:
+        '200':
+          description: Tournament placements.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Tournament not found.
+  /cod/standings:
+    get:
+      summary: CDL standings
+      description: Returns current Call of Duty League standings (alias of /cod/cdl/standings).
+      operationId: getCodStandings
+      tags:
+      - Call of Duty
+      parameters:
+      - name: season
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Season filter (e.g. 2026).
+      - name: stage
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Stage/major filter.
+      responses:
+        '200':
+          description: CDL standings.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/transfers:
+    get:
+      summary: List Call of Duty transfers
+      description: Lists recent COD roster transfers.
+      operationId: listCodTransfers
+      tags:
+      - Call of Duty
+      parameters:
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - join
+          - leave
+          - transfer
+          - retire
+        description: Filter by transfer type.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Transfer list.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /cod/leaderboards/earnings:
+    get:
+      summary: Call of Duty earnings leaderboard
+      description: Returns the COD player earnings leaderboard.
+      operationId: getCodEarningsLeaderboard
+      tags:
+      - Call of Duty
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: game
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Filter by game title.
+      - name: year
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: Filter by year.
+      responses:
+        '200':
+          description: Earnings leaderboard.
+        '401':
+          description: Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: Validation error message
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your Cito API key. Get one at https://citoapi.com
