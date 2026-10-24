@@ -38,3 +38,35 @@ plans:
     limits:
       - name: monthly_calls
         max: 1000000
+x-canonical:
+  generated: '2026-10-23'
+  vocabulary: all/0-working/economics/plans-canonical.yml
+  models:
+  - free
+  - subscription
+  units: []
+  plans:
+  - name: Free Plan
+    access: other
+    model: free
+    model_how: derived
+    units: []
+    periods: []
+  - name: Starter Plan
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
+  - name: Pro Plan
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
+  - name: Scale Plan
+    access: other
+    model: subscription
+    model_how: derived
+    units: []
+    periods: []
