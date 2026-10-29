@@ -64,5 +64,148 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Cito CS2 API is a company surfaced via the API Evangelist harvest backlog (source: new-submission) and added to the network as a stub for full-pipeline profiling.
-- https://citoapi.com/cs2-api/
+Cito CS2 API provides live data for Counter-Strike 2, League of Legends, Dota 2, Call of Duty, Apex Legends, and UFC. It aggregates match scores, player statistics, team rosters, rankings, and skin/item prices across dozens of marketplaces, delivering clean JSON via a single API key. The service includes an MCP server for agent integration and SDKs for JavaScript and Python, targeting developers building esports analytics, betting, or game‑related applications.
+
+**Areas:** Company · Esports · Gaming · Data
+
+## Cito CS2 API on APIs.io
+
+Everything profiled for Cito CS2 API is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/citoapi/](https://apis.io/providers/citoapi/)** — or go straight to one of the APIs or properties below.
+
+### APIs (11)
+
+- [Cito UFC API](https://apis.io/apis/citoapi/cito-ufc-api/) — Cito UFC API provides esports data including UFC match info and statistics.
+- [Cito CS2 API BKFC API](https://apis.io/apis/citoapi/citoapi-bkfc-api/) — Bare Knuckle Fighting Championship: every event since 2018, full cards, results, round-by-round punch statistics, fighters, official rankings and live cards.
+- [Cito CS2 API Call of Duty API](https://apis.io/apis/citoapi/citoapi-call-of-duty-api/) — Call of Duty (CDL) matches, live scores, players, organizations, tournaments, standings, transfers, and leaderboards.
+- [Cito CS2 API CS2 API](https://apis.io/apis/citoapi/citoapi-cs2-api/) — Counter-Strike 2: live matches, results, maps, rounds, teams, players, events, rankings, stats and skins. **Beta.** CS2 is in beta. If anything looks wrong,…
+- [Cito CS2 API Dota 2 API](https://apis.io/apis/citoapi/citoapi-dota-2-api/) — Dota 2 esports matches, teams, players, tournaments, player stats, and radar snapshots.
+- [Cito CS2 API Fortnite API](https://apis.io/apis/citoapi/citoapi-fortnite-api/) — Fortnite competitive matches, tournaments/events, live leaderboards, players, orgs, pro rankings, transfers, and earnings leaderboards.
+- [Cito CS2 API QR Code API](https://apis.io/apis/citoapi/citoapi-qr-code-api/) — Generate QR codes with optional logo overlay.
+- [Cito CS2 API RAF Wrestling API](https://apis.io/apis/citoapi/citoapi-raf-wrestling-api/) — Real American Freestyle professional wrestling: events, cards, results with per-period scores and takedowns, athletes, champions and live results.
+- [Cito CS2 API Tennis API](https://apis.io/apis/citoapi/citoapi-tennis-api/) — The Tennis API from Cito CS2 API — 54 operation(s) for tennis.
+- [Cito CS2 API UFC API](https://apis.io/apis/citoapi/citoapi-ufc-api/) — UFC rankings, fighters, fighter profile stats, events, fight cards, bouts, and results.
+- [Cito CS2 API Utility API](https://apis.io/apis/citoapi/citoapi-utility-api/) — Health and status endpoints.
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Citoapi Webhooks](https://apis.io/asyncapis/citoapi/citoapi-webhooks/)
+
+#### JSON Schema (6)
+
+The data models the API reads and writes.
+
+- [BkfcBout](https://apis.io/schemas/citoapi/citoapi-bkfc-bout/)
+- [RafBout](https://apis.io/schemas/citoapi/citoapi-raf-bout/)
+- [LiveMatchDetail](https://apis.io/schemas/citoapi/citoapi-tennis-live-match-detail/)
+- [MatchDetailResponse](https://apis.io/schemas/citoapi/citoapi-tennis-match-detail-response/)
+- [PlayerProfile](https://apis.io/schemas/citoapi/citoapi-tennis-player-profile/)
+- [TournamentDetailResponse](https://apis.io/schemas/citoapi/citoapi-tennis-tournament-detail-response/)
+
+#### JSON-LD (1)
+
+Linked-data contexts for the provider's vocabulary.
+
+- [Citoapi Context](https://apis.io/jsonld/citoapi/citoapi-context/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [Cito CS2 API API Rules](https://apis.io/rules/citoapi/citoapi-rules/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Citoapi Authentication](https://apis.io/security/citoapi/citoapi-authentication/)
+- [Citoapi Domain Security](https://apis.io/security/citoapi/citoapi-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Citoapi Plans Pricing](https://apis.io/plans/citoapi/citoapi-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Citoapi Rate Limits](https://apis.io/rate-limits/citoapi/citoapi-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://citoapi.com/)
+- [Documentation](https://citoapi.com/docs/api/cs2)
+- [Getting started](https://citoapi.com/signup/)
+- [API reference](https://citoapi.com/docs/api/cs2)
+- [Pricing](https://citoapi.com/pricing/)
+- [Sign up](https://citoapi.com/signup/)
+- [Support](https://citoapi.com/contact/)
+- [Changelog](https://citoapi.com/docs/changelog/)
+- [Blog](https://citoapi.com/blog/)
+- [Terms of service](https://citoapi.com/terms/)
+- [Privacy policy](https://citoapi.com/privacy/)
+- [Status](https://citoapi.com/status/)
+
+## API Evangelist rating
+
+**Kin Score 63.0** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 64.3 |
+| Contract quality | 71.2 |
+| Contract governance | 22.0 |
+| Operational transparency | 71.1 |
+| Developer ergonomics | 54.8 |
+| Access clarity | 76.3 |
+
+**Agent readiness 30.6** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | — |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | partial |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | — |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | — |
+
+**Regulatory alignment 24.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/citoapi/](https://apis.io/providers/citoapi/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Cito CS2 API: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/citoapi/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
